@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -433,22 +433,12 @@ class DefaultWebClient implements WebClient {
 		private <T extends Publisher<?>> T bodyToPublisher(ClientResponse response,
 				T bodyPublisher, Function<Mono<? extends Throwable>, T> errorFunction) {
 
-			for (StatusHandler handler : this.statusHandlers) {
-				if (handler.test(response.statusCode())) {
-					Mono<? extends Throwable> exMono = handler.apply(response);
-					exMono = exMono.flatMap(ex -> drainBody(response, ex));
-					exMono = exMono.onErrorResume(ex -> drainBody(response, ex));
-					return errorFunction.apply(exMono);
-				}
-			}
-			return bodyPublisher;
-		}
-
-		@SuppressWarnings("unchecked")
-		private <T> Mono<T> drainBody(ClientResponse response, Throwable ex) {
-			// Ensure the body is drained, even if the StatusHandler didn't consume it,
-			// but ignore errors in case it did consume it.
-			return (Mono<T>) response.bodyToMono(Void.class).onErrorMap(ex2 -> ex).thenReturn(ex);
+			return this.statusHandlers.stream()
+					.filter(statusHandler -> statusHandler.test(response.statusCode()))
+					.findFirst()
+					.map(statusHandler -> statusHandler.apply(response))
+					.map(errorFunction::apply)
+					.orElse(bodyPublisher);
 		}
 
 		private static Mono<WebClientResponseException> createResponseException(ClientResponse response) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,8 +50,7 @@ import org.springframework.web.util.UriBuilder;
 
 /**
  * Represents a server-side HTTP request, as handled by a {@code HandlerFunction}.
- *
- * <p>Access to headers and body is offered by {@link Headers} and
+ * Access to headers and body is offered by {@link Headers} and
  * {@link #body(BodyExtractor)}, respectively.
  *
  * @author Arjen Poutsma
@@ -61,7 +60,7 @@ import org.springframework.web.util.UriBuilder;
 public interface ServerRequest {
 
 	/**
-	 * Get the HTTP method.
+	 * Return the HTTP method.
 	 * @return the HTTP method as an HttpMethod enum value, or {@code null}
 	 * if not resolvable (e.g. in case of a non-standard HTTP method)
 	 */
@@ -71,20 +70,20 @@ public interface ServerRequest {
 	}
 
 	/**
-	 * Get the name of the HTTP method.
+	 * Return the name of the HTTP method.
 	 * @return the HTTP method as a String
 	 */
 	String methodName();
 
 	/**
-	 * Get the request URI.
+	 * Return the request URI.
 	 */
 	URI uri();
 
 	/**
-	 * Get a {@code UriBuilderComponents}  from the URI associated with this
+	 * Return a {@code UriBuilderComponents}  from the URI associated with this
 	 * {@code ServerRequest}, while also overlaying with values from the headers
-	 * "Forwarded" (<a href="https://tools.ietf.org/html/rfc7239">RFC 7239</a>),
+	 * "Forwarded" (<a href="http://tools.ietf.org/html/rfc7239">RFC 7239</a>),
 	 * or "X-Forwarded-Host", "X-Forwarded-Port", and "X-Forwarded-Proto" if
 	 * "Forwarded" is not found.
 	 * @return a URI builder
@@ -92,26 +91,26 @@ public interface ServerRequest {
 	UriBuilder uriBuilder();
 
 	/**
-	 * Get the request path.
+	 * Return the request path.
 	 */
 	default String path() {
 		return uri().getRawPath();
 	}
 
 	/**
-	 * Get the request path as a {@code PathContainer}.
+	 * Return the request path as {@code PathContainer}.
 	 */
 	default PathContainer pathContainer() {
 		return PathContainer.parsePath(path());
 	}
 
 	/**
-	 * Get the headers of this request.
+	 * Return the headers of this request.
 	 */
 	Headers headers();
 
 	/**
-	 * Get the cookies of this request.
+	 * Return the cookies of this request.
 	 */
 	MultiValueMap<String, HttpCookie> cookies();
 
@@ -167,22 +166,28 @@ public interface ServerRequest {
 	<T> Flux<T> bodyToFlux(ParameterizedTypeReference<T> typeReference);
 
 	/**
-	 * Get the request attribute value if present.
+	 * Return the request attribute value if present.
 	 * @param name the attribute name
 	 * @return the attribute value
 	 */
 	default Optional<Object> attribute(String name) {
-		return Optional.ofNullable(attributes().get(name));
+		Map<String, Object> attributes = attributes();
+		if (attributes.containsKey(name)) {
+			return Optional.of(attributes.get(name));
+		}
+		else {
+			return Optional.empty();
+		}
 	}
 
 	/**
-	 * Get a mutable map of request attributes.
+	 * Return a mutable map of request attributes.
 	 * @return the request attributes
 	 */
 	Map<String, Object> attributes();
 
 	/**
-	 * Get the first query parameter with the given name, if present.
+	 * Return the first query parameter with the given name, if present.
 	 * @param name the parameter name
 	 * @return the parameter value
 	 */
@@ -201,12 +206,12 @@ public interface ServerRequest {
 	}
 
 	/**
-	 * Get all query parameters for this request.
+	 * Return all query parameters for this request.
 	 */
 	MultiValueMap<String, String> queryParams();
 
 	/**
-	 * Get the path variable with the given name, if present.
+	 * Return the path variable with the given name, if present.
 	 * @param name the variable name
 	 * @return the variable value
 	 * @throws IllegalArgumentException if there is no path variable with the given name
@@ -222,38 +227,38 @@ public interface ServerRequest {
 	}
 
 	/**
-	 * Get all path variables for this request.
+	 * Return all path variables for this request.
 	 */
 	Map<String, String> pathVariables();
 
 	/**
-	 * Get the web session for this request.
-	 * <p>Always guaranteed to return an instance either matching the session id
-	 * requested by the client, or with a new session id either because the client
-	 * did not specify one or because the underlying session had expired.
-	 * <p>Use of this method does not automatically create a session.
+	 * Return the web session for this request. Always guaranteed to
+	 * return an instance either matching to the session id requested by the
+	 * client, or with a new session id either because the client did not
+	 * specify one or because the underlying session had expired. Use of this
+	 * method does not automatically create a session.
 	 */
 	Mono<WebSession> session();
 
 	/**
-	 * Get the authenticated user for the request, if any.
+	 * Return the authenticated user for the request, if any.
 	 */
 	Mono<? extends Principal> principal();
 
 	/**
-	 * Get the form data from the body of the request if the Content-Type is
+	 * Return the form data from the body of the request if the Content-Type is
 	 * {@code "application/x-www-form-urlencoded"} or an empty map otherwise.
 	 * <p><strong>Note:</strong> calling this method causes the request body to
-	 * be read and parsed in full, and the resulting {@code MultiValueMap} is
+	 * be read and parsed in full and the resulting {@code MultiValueMap} is
 	 * cached so that this method is safe to call more than once.
 	 */
 	Mono<MultiValueMap<String, String>> formData();
 
 	/**
-	 * Get the parts of a multipart request if the Content-Type is
+	 * Return the parts of a multipart request if the Content-Type is
 	 * {@code "multipart/form-data"} or an empty map otherwise.
 	 * <p><strong>Note:</strong> calling this method causes the request body to
-	 * be read and parsed in full, and the resulting {@code MultiValueMap} is
+	 * be read and parsed in full and the resulting {@code MultiValueMap} is
 	 * cached so that this method is safe to call more than once.
 	 */
 	Mono<MultiValueMap<String, Part>> multipartData();
@@ -280,60 +285,59 @@ public interface ServerRequest {
 	interface Headers {
 
 		/**
-		 * Get the list of acceptable media types, as specified by the {@code Accept}
-		 * header.
-		 * <p>Returns an empty list if the acceptable media types are unspecified.
+		 * Return the list of acceptable {@code MediaType media types},
+		 * as specified by the {@code Accept} header.
+		 * <p>Returns an empty list when the acceptable media types are unspecified.
 		 */
 		List<MediaType> accept();
 
 		/**
-		 * Get the list of acceptable charsets, as specified by the
-		 * {@code Accept-Charset} header.
+		 * Return the list of acceptable {@code Charset charsets},
+		 * as specified by the {@code Accept-Charset} header.
 		 */
 		List<Charset> acceptCharset();
 
 		/**
-		 * Get the list of acceptable languages, as specified by the
-		 * {@code Accept-Language} header.
+		 * Return the list of acceptable {@code Locale.LanguageRange languages},
+		 * as specified by the {@code Accept-Language} header.
 		 */
 		List<Locale.LanguageRange> acceptLanguage();
 
 		/**
-		 * Get the length of the body in bytes, as specified by the
+		 * Return the length of the body in bytes, as specified by the
 		 * {@code Content-Length} header.
 		 */
 		OptionalLong contentLength();
 
 		/**
-		 * Get the media type of the body, as specified by the
-		 * {@code Content-Type} header.
+		 * Return the {@code MediaType media type} of the body, as specified
+		 * by the {@code Content-Type} header.
 		 */
 		Optional<MediaType> contentType();
 
 		/**
-		 * Get the value of the {@code Host} header, if available.
-		 * <p>If the header value does not contain a port, the
-		 * {@linkplain InetSocketAddress#getPort() port} in the returned address will
-		 * be {@code 0}.
+		 * Return the value of the required {@code Host} header.
+		 * <p>If the header value does not contain a port, the returned
+		 * {@linkplain InetSocketAddress#getPort() port} will be {@code 0}.
 		 */
 		@Nullable
 		InetSocketAddress host();
 
 		/**
-		 * Get the value of the {@code Range} header.
+		 * Return the value of the {@code Range} header.
 		 * <p>Returns an empty list when the range is unknown.
 		 */
 		List<HttpRange> range();
 
 		/**
-		 * Get the header value(s), if any, for the header of the given name.
-		 * <p>Returns an empty list if no header values are found.
+		 * Return the header value(s), if any, for the header of the given name.
+		 * <p>Return an empty list if no header values are found.
 		 * @param headerName the header name
 		 */
 		List<String> header(String headerName);
 
 		/**
-		 * Get the headers as an instance of {@link HttpHeaders}.
+		 * Return the headers as a {@link HttpHeaders} instance.
 		 */
 		HttpHeaders asHttpHeaders();
 	}

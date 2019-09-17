@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
 package org.springframework.core.io.support;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -172,7 +171,7 @@ import org.springframework.util.StringUtils;
  * @author Colin Sampaleanu
  * @author Marius Bogoevici
  * @author Costin Leau
- * @author Phillip Webb
+ * @author Phil Webb
  * @since 1.0.2
  * @see #CLASSPATH_ALL_URL_PREFIX
  * @see org.springframework.util.AntPathMatcher
@@ -697,16 +696,10 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		try {
 			rootDir = rootDirResource.getFile().getAbsoluteFile();
 		}
-		catch (FileNotFoundException ex) {
-			if (logger.isInfoEnabled()) {
-				logger.info("Cannot search for matching files underneath " + rootDirResource +
-						" in the file system: " + ex.getMessage());
-			}
-			return Collections.emptySet();
-		}
-		catch (Exception ex) {
+		catch (IOException ex) {
 			if (logger.isWarnEnabled()) {
-				logger.warn("Failed to resolve " + rootDirResource + " in the file system: " + ex);
+				logger.warn("Cannot search for matching files underneath " + rootDirResource +
+						" because it does not correspond to a directory in the file system", ex);
 			}
 			return Collections.emptySet();
 		}

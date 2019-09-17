@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,7 +54,7 @@ public class ServerWebExchangeArgumentResolverTests {
 			new ServerWebExchangeArgumentResolver(ReactiveAdapterRegistry.getSharedInstance());
 
 	private final MockServerWebExchange exchange = MockServerWebExchange.from(
-			MockServerHttpRequest.get("https://example.org:9999/path?q=foo"));
+			MockServerHttpRequest.get("http://example.org:9999/path?q=foo"));
 
 	private ResolvableMethod testMethod = ResolvableMethod.on(getClass()).named("handle").build();
 
@@ -105,7 +105,7 @@ public class ServerWebExchangeArgumentResolverTests {
 
 		assertNotNull(value);
 		assertEquals(UriComponentsBuilder.class, value.getClass());
-		assertEquals("https://example.org:9999/next", ((UriComponentsBuilder) value).path("/next").toUriString());
+		assertEquals("http://example.org:9999/next", ((UriComponentsBuilder) value).path("/next").toUriString());
 	}
 
 

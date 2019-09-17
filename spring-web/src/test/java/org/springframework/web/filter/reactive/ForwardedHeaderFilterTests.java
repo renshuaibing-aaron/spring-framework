@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,6 @@ import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
@@ -67,7 +66,7 @@ public class ForwardedHeaderFilterTests {
 	@Test
 	public void xForwardedRequest() throws Exception {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest
-				.get("https://example.com/path")
+				.get("http://example.com/path")
 				.header("X-Forwarded-Host", "84.198.58.199")
 				.header("X-Forwarded-Port", "443")
 				.header("X-Forwarded-Proto", "https"));
@@ -81,7 +80,7 @@ public class ForwardedHeaderFilterTests {
 	@Test
 	public void forwardedRequest() throws Exception {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest
-				.get("https://example.com/path")
+				.get("http://example.com/path")
 				.header("Forwarded", "host=84.198.58.199;proto=https"));
 
 		this.filter.filter(exchange, this.filterChain).block(Duration.ZERO);
@@ -93,37 +92,25 @@ public class ForwardedHeaderFilterTests {
 	@Test
 	public void requestUriWithForwardedPrefix() throws Exception {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest
-				.get("https://example.com/path")
+				.get("http://example.com/path")
 				.header("X-Forwarded-Prefix", "/prefix"));
 
 		this.filter.filter(exchange, this.filterChain).block(Duration.ZERO);
 
 		URI uri = this.filterChain.uri;
-		assertEquals(new URI("https://example.com/prefix/path"), uri);
+		assertEquals(new URI("http://example.com/prefix/path"), uri);
 	}
 
 	@Test
 	public void requestUriWithForwardedPrefixTrailingSlash() throws Exception {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest
-				.get("https://example.com/path")
+				.get("http://example.com/path")
 				.header("X-Forwarded-Prefix", "/prefix/"));
 
 		this.filter.filter(exchange, this.filterChain).block(Duration.ZERO);
 
 		URI uri = this.filterChain.uri;
-		assertEquals(new URI("https://example.com/prefix/path"), uri);
-	}
-
-	@Test // SPR-17525
-	public void shouldNotDoubleEncode() throws Exception {
-		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest
-				.method(HttpMethod.GET, new URI ("https://example.com/a%20b?q=a%2Bb"))
-				.header("Forwarded", "host=84.198.58.199;proto=https"));
-
-		this.filter.filter(exchange, this.filterChain).block(Duration.ZERO);
-
-		URI uri = this.filterChain.uri;
-		assertEquals(new URI("https://84.198.58.199/a%20b?q=a%2Bb"), uri);
+		assertEquals(new URI("http://example.com/prefix/path"), uri);
 	}
 
 

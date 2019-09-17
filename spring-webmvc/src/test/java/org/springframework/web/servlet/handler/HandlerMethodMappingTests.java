@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -82,10 +81,8 @@ public class HandlerMethodMappingTests {
 		String key = "foo";
 		this.mapping.registerMapping(key, this.handler, this.method1);
 
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", key);
-		HandlerMethod result = this.mapping.getHandlerInternal(request);
+		HandlerMethod result = this.mapping.getHandlerInternal(new MockHttpServletRequest("GET", key));
 		assertEquals(method1, result.getMethod());
-		assertEquals(result, request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE));
 	}
 
 	@Test
@@ -93,10 +90,8 @@ public class HandlerMethodMappingTests {
 		this.mapping.registerMapping("/fo*", this.handler, this.method1);
 		this.mapping.registerMapping("/f*", this.handler, this.method2);
 
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
-		HandlerMethod result = this.mapping.getHandlerInternal(request);
+		HandlerMethod result = this.mapping.getHandlerInternal(new MockHttpServletRequest("GET", "/foo"));
 		assertEquals(method1, result.getMethod());
-		assertEquals(result, request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE));
 	}
 
 	@Test(expected = IllegalStateException.class)

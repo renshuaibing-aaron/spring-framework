@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -64,7 +64,7 @@ public class StandardTypeLocator implements TypeLocator {
 
 
 	/**
-	 * Register a new import prefix that will be used when searching for unqualified types.
+	 * Register a new imports prefix that will be used when searching for unqualified types.
 	 * Expected format is something like "java.lang".
 	 * @param prefix the prefix to register
 	 */
@@ -81,8 +81,8 @@ public class StandardTypeLocator implements TypeLocator {
 	}
 
 	/**
-	 * Return a list of all the import prefixes registered with this StandardTypeLocator.
-	 * @return a list of registered import prefixes
+	 * Return a list of all the imports prefixes registered with this StandardTypeLocator.
+	 * @return a list of registered imports prefixes
 	 */
 	public List<String> getImportPrefixes() {
 		return Collections.unmodifiableList(this.knownPackagePrefixes);

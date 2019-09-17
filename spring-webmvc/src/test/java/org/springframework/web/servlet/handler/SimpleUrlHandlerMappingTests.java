@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,18 +41,17 @@ import static org.junit.Assert.*;
 public class SimpleUrlHandlerMappingTests {
 
 	@Test
-	@SuppressWarnings("resource")
-	public void handlerBeanNotFound() {
+	public void handlerBeanNotFound() throws Exception {
 		MockServletContext sc = new MockServletContext("");
 		XmlWebApplicationContext root = new XmlWebApplicationContext();
 		root.setServletContext(sc);
-		root.setConfigLocations("/org/springframework/web/servlet/handler/map1.xml");
+		root.setConfigLocations(new String[] {"/org/springframework/web/servlet/handler/map1.xml"});
 		root.refresh();
 		XmlWebApplicationContext wac = new XmlWebApplicationContext();
 		wac.setParent(root);
 		wac.setServletContext(sc);
 		wac.setNamespace("map2err");
-		wac.setConfigLocations("/org/springframework/web/servlet/handler/map2err.xml");
+		wac.setConfigLocations(new String[] {"/org/springframework/web/servlet/handler/map2err.xml"});
 		try {
 			wac.refresh();
 			fail("Should have thrown NoSuchBeanDefinitionException");
@@ -94,7 +93,7 @@ public class SimpleUrlHandlerMappingTests {
 		MockServletContext sc = new MockServletContext("");
 		XmlWebApplicationContext wac = new XmlWebApplicationContext();
 		wac.setServletContext(sc);
-		wac.setConfigLocations("/org/springframework/web/servlet/handler/map2.xml");
+		wac.setConfigLocations(new String[] {"/org/springframework/web/servlet/handler/map2.xml"});
 		wac.refresh();
 		Object bean = wac.getBean("mainController");
 		Object otherBean = wac.getBean("otherController");
@@ -105,13 +104,11 @@ public class SimpleUrlHandlerMappingTests {
 		HandlerExecutionChain hec = getHandler(hm, req);
 		assertTrue("Handler is correct bean", hec != null && hec.getHandler() == bean);
 		assertEquals("/welcome.html", req.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
-		assertEquals(bean, req.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE));
 
 		req = new MockHttpServletRequest("GET", "/welcome.x");
 		hec = getHandler(hm, req);
 		assertTrue("Handler is correct bean", hec != null && hec.getHandler() == otherBean);
 		assertEquals("welcome.x", req.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
-		assertEquals(otherBean, req.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE));
 
 		req = new MockHttpServletRequest("GET", "/welcome/");
 		hec = getHandler(hm, req);

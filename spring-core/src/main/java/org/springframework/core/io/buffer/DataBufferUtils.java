@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -359,9 +359,11 @@ public abstract class DataBufferUtils {
 	 * process when subscribed to, and that publishes any writing errors and the completion signal
 	 * @since 5.0.10
 	 */
-	public static Flux<DataBuffer> write(Publisher<DataBuffer> source, AsynchronousFileChannel channel) {
+	public static Flux<DataBuffer> write(
+			Publisher<DataBuffer> source, AsynchronousFileChannel channel) {
 		return write(source, channel, 0);
 	}
+
 
 	/**
 	 * Write the given stream of {@link DataBuffer DataBuffers} to the given {@code AsynchronousFileChannel}.

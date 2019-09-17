@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -124,7 +124,6 @@ public abstract class AbstractTraceInterceptor implements MethodInterceptor, Ser
 	 * @see #invokeUnderTrace(org.aopalliance.intercept.MethodInvocation, org.apache.commons.logging.Log)
 	 */
 	@Override
-	@Nullable
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		Log logger = getLoggerForInvocation(invocation);
 		if (isInterceptorEnabled(invocation, logger)) {
@@ -243,7 +242,6 @@ public abstract class AbstractTraceInterceptor implements MethodInterceptor, Ser
 	 * @see #writeToLog(Log, String)
 	 * @see #writeToLog(Log, String, Throwable)
 	 */
-	@Nullable
 	protected abstract Object invokeUnderTrace(MethodInvocation invocation, Log logger) throws Throwable;
 
 }

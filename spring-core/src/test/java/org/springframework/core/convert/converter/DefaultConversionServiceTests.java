@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -134,7 +134,7 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void testStringToByte() {
+	public void testStringToByte() throws Exception {
 		assertEquals(Byte.valueOf("1"), conversionService.convert("1", Byte.class));
 	}
 
@@ -225,12 +225,12 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void testStringToEnum() {
+	public void testStringToEnum() throws Exception {
 		assertEquals(Foo.BAR, conversionService.convert("BAR", Foo.class));
 	}
 
 	@Test
-	public void testStringToEnumWithSubclass() {
+	public void testStringToEnumWithSubclass() throws Exception {
 		assertEquals(SubFoo.BAZ, conversionService.convert("BAZ", SubFoo.BAR.getClass()));
 	}
 
@@ -245,12 +245,12 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void testIntegerToEnum() {
+	public void testIntegerToEnum() throws Exception {
 		assertEquals(Foo.BAR, conversionService.convert(0, Foo.class));
 	}
 
 	@Test
-	public void testIntegerToEnumWithSubclass() {
+	public void testIntegerToEnumWithSubclass() throws Exception {
 		assertEquals(SubFoo.BAZ, conversionService.convert(1, SubFoo.BAR.getClass()));
 	}
 
@@ -395,6 +395,10 @@ public class DefaultConversionServiceTests {
 		conversionService.convert(new String[]{"1", "2", "3"}, AbstractList.class);
 	}
 
+	public static enum FooEnum {
+		BAR, BAZ
+	}
+
 	@Test
 	public void convertArrayToString() {
 		String result = conversionService.convert(new String[] {"1", "2", "3"}, String.class);
@@ -521,8 +525,9 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void convertStringToCollection() {
-		List<?> result = conversionService.convert("1,2,3", List.class);
+		List result = conversionService.convert("1,2,3", List.class);
 		assertEquals(3, result.size());
 		assertEquals("1", result.get(0));
 		assertEquals("2", result.get(1));
@@ -530,8 +535,9 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void convertStringToCollectionWithElementConversion() throws Exception {
-		List<?> result = (List) conversionService.convert("1,2,3", TypeDescriptor.valueOf(String.class),
+		List result = (List) conversionService.convert("1,2,3", TypeDescriptor.valueOf(String.class),
 				new TypeDescriptor(getClass().getField("genericList")));
 		assertEquals(3, result.size());
 		assertEquals(1, result.get(0));
@@ -540,8 +546,9 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void convertEmptyStringToCollection() {
-		Collection<?> result = conversionService.convert("", Collection.class);
+		Collection result = conversionService.convert("", Collection.class);
 		assertEquals(0, result.size());
 	}
 
@@ -568,18 +575,25 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void convertCollectionToObjectWithCustomConverter() {
+	@SuppressWarnings("rawtypes")
+	public void convertCollectionToObjectWithCustomConverter() throws Exception {
 		List<String> source = new ArrayList<>();
 		source.add("A");
 		source.add("B");
-		conversionService.addConverter(List.class, ListWrapper.class, ListWrapper::new);
+		conversionService.addConverter(new Converter<List, ListWrapper>() {
+			@Override
+			public ListWrapper convert(List source) {
+				return new ListWrapper(source);
+			}
+		});
 		ListWrapper result = conversionService.convert(source, ListWrapper.class);
 		assertSame(source, result.getList());
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void convertObjectToCollection() {
-		List<?> result = conversionService.convert(3L, List.class);
+		List result = conversionService.convert(3L, List.class);
 		assertEquals(1, result.size());
 		assertEquals(3L, result.get(0));
 	}
@@ -594,7 +608,7 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void convertStringArrayToIntegerArray() {
+	public void convertArrayToArray() {
 		Integer[] result = conversionService.convert(new String[] {"1", "2", "3"}, Integer[].class);
 		assertEquals(Integer.valueOf(1), result[0]);
 		assertEquals(Integer.valueOf(2), result[1]);
@@ -602,7 +616,7 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void convertStringArrayToIntArray() {
+	public void convertArrayToPrimitiveArray() {
 		int[] result = conversionService.convert(new String[] {"1", "2", "3"}, int[].class);
 		assertEquals(1, result[0]);
 		assertEquals(2, result[1]);
@@ -610,39 +624,7 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void convertIntegerArrayToIntegerArray() {
-		Integer[] result = conversionService.convert(new Integer[] {1, 2, 3}, Integer[].class);
-		assertEquals(Integer.valueOf(1), result[0]);
-		assertEquals(Integer.valueOf(2), result[1]);
-		assertEquals(Integer.valueOf(3), result[2]);
-	}
-
-	@Test
-	public void convertIntegerArrayToIntArray() {
-		int[] result = conversionService.convert(new Integer[] {1, 2, 3}, int[].class);
-		assertEquals(1, result[0]);
-		assertEquals(2, result[1]);
-		assertEquals(3, result[2]);
-	}
-
-	@Test
-	public void convertObjectArrayToIntegerArray() {
-		Integer[] result = conversionService.convert(new Object[] {1, 2, 3}, Integer[].class);
-		assertEquals(Integer.valueOf(1), result[0]);
-		assertEquals(Integer.valueOf(2), result[1]);
-		assertEquals(Integer.valueOf(3), result[2]);
-	}
-
-	@Test
-	public void convertObjectArrayToIntArray() {
-		int[] result = conversionService.convert(new Object[] {1, 2, 3}, int[].class);
-		assertEquals(1, result[0]);
-		assertEquals(2, result[1]);
-		assertEquals(3, result[2]);
-	}
-
-	@Test
-	public void convertByteArrayToWrapperArray() {
+	public void convertArrayToWrapperArray() {
 		byte[] byteArray = new byte[] {1, 2, 3};
 		Byte[] converted = conversionService.convert(byteArray, Byte[].class);
 		assertThat(converted, equalTo(new Byte[]{1, 2, 3}));
@@ -712,7 +694,7 @@ public class DefaultConversionServiceTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void convertCollectionToCollectionNotGeneric() {
+	public void convertCollectionToCollectionNotGeneric() throws Exception {
 		Set<String> foo = new LinkedHashSet<>();
 		foo.add("1");
 		foo.add("2");
@@ -758,10 +740,10 @@ public class DefaultConversionServiceTests {
 		foo.put("1", "BAR");
 		foo.put("2", "BAZ");
 		@SuppressWarnings("unchecked")
-		Map<Integer, Foo> map = (Map<Integer, Foo>) conversionService.convert(foo,
+		Map<Integer, FooEnum> map = (Map<Integer, FooEnum>) conversionService.convert(foo,
 				TypeDescriptor.forObject(foo), new TypeDescriptor(getClass().getField("genericMap")));
-		assertEquals(Foo.BAR, map.get(1));
-		assertEquals(Foo.BAZ, map.get(2));
+		assertEquals(FooEnum.BAR, map.get(1));
+		assertEquals(FooEnum.BAZ, map.get(2));
 	}
 
 	@Test
@@ -899,20 +881,25 @@ public class DefaultConversionServiceTests {
 	}
 
 	@Test
-	public void convertCharArrayToString() {
+	public void convertCharArrayToString() throws Exception {
 		String converted = conversionService.convert(new char[] {'a', 'b', 'c'}, String.class);
 		assertThat(converted, equalTo("a,b,c"));
 	}
 
 	@Test
-	public void convertStringToCharArray() {
+	public void convertStringToCharArray() throws Exception {
 		char[] converted = conversionService.convert("a,b,c", char[].class);
 		assertThat(converted, equalTo(new char[]{'a', 'b', 'c'}));
 	}
 
 	@Test
-	public void convertStringToCustomCharArray() {
-		conversionService.addConverter(String.class, char[].class, String::toCharArray);
+	public void convertStringToCustomCharArray() throws Exception {
+		conversionService.addConverter(new Converter<String, char[]>() {
+			@Override
+			public char[] convert(String source) {
+				return source.toCharArray();
+			}
+		});
 		char[] converted = conversionService.convert("abc", char[].class);
 		assertThat(converted, equalTo(new char[] {'a', 'b', 'c'}));
 	}
@@ -929,11 +916,16 @@ public class DefaultConversionServiceTests {
 
 	@Test
 	public void convertCannotOptimizeArray() {
-		conversionService.addConverter(Byte.class, Byte.class, source -> (byte) (source + 1));
+		conversionService.addConverter(new Converter<Byte, Byte>() {
+			@Override
+			public Byte convert(Byte source) {
+				return (byte) (source + 1);
+			}
+		});
 		byte[] byteArray = new byte[] {1, 2, 3};
 		byte[] converted = conversionService.convert(byteArray, byte[].class);
 		assertNotSame(byteArray, converted);
-		assertArrayEquals(new byte[]{2, 3, 4}, converted);
+		assertTrue(Arrays.equals(new byte[] {2, 3, 4}, converted));
 	}
 
 	@Test
@@ -985,7 +977,7 @@ public class DefaultConversionServiceTests {
 
 	public Stream<Integer> genericStream;
 
-	public Map<Integer, Foo> genericMap = new HashMap<>();
+	public Map<Integer, FooEnum> genericMap = new HashMap<>();
 
 	public EnumSet<Foo> enumSet;
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -192,6 +192,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		super(parentBeanFactory);
 	}
 
+	@Override
+	protected InstantiationStrategy getInstantiationStrategy() {
+		return super.getInstantiationStrategy();
+	}
+
 
 	/**
 	 * Specify an id for serialization purposes, allowing this BeanFactory to be
@@ -330,11 +335,24 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Override
 	public <T> T getBean(Class<T> requiredType) throws BeansException {
+		/**
+		 *  getBean 是一个空壳方法，所有的逻辑都封装在 doGetBean 方法中
+		 */
 		return getBean(requiredType, (Object[]) null);
 	}
 
 	@Override
+	protected Class<?> predictBeanType(String beanName, RootBeanDefinition mbd, Class<?>... typesToMatch) {
+		return super.predictBeanType(beanName, mbd, typesToMatch);
+	}
+
+	@Override
 	public <T> T getBean(Class<T> requiredType, @Nullable Object... args) throws BeansException {
+		//NamedBeanHolder 可以理解为一个数据结构和map差不多，里面就是存了bean的名字和bean的实例
+		//这个类的注释可以点开查看
+		//A simple holder for a given bean name plus bean instance
+		//一个简单的bean和名字的容器
+		//通过resolveNamedBean方法得到这个holder，故而需要看这个resolveNamedBean方法如何得到这个holder的
 		NamedBeanHolder<T> namedBean = resolveNamedBean(requiredType, args);
 		if (namedBean != null) {
 			return namedBean.getBeanInstance();
@@ -401,6 +419,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return resolvedBeanNames;
 	}
 
+	//根据类型去factory中获取对应类的名字
+	//比如在工厂初始化的时候可以根据BeanFactory去获取所有的BeanFactoryProcessor
 	private String[] doGetBeanNamesForType(ResolvableType type, boolean includeNonSingletons, boolean allowEagerInit) {
 		List<String> result = new ArrayList<>();
 
@@ -563,10 +583,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return result;
 	}
 
+	/**
+	 * Find a {@link Annotation} of {@code annotationType} on the specified
+	 * bean, traversing its interfaces and super classes if no annotation can be
+	 * found on the given class itself, as well as checking its raw bean class
+	 * if not found on the exposed bean reference (e.g. in case of a proxy).
+	 */
 	@Override
 	@Nullable
 	public <A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
-			throws NoSuchBeanDefinitionException {
+			throws NoSuchBeanDefinitionException{
 
 		A ann = null;
 		Class<?> beanType = getType(beanName);
@@ -574,12 +600,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			ann = AnnotationUtils.findAnnotation(beanType, annotationType);
 		}
 		if (ann == null && containsBeanDefinition(beanName)) {
-			// Check raw bean class, e.g. in case of a proxy.
-			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
-			if (bd.hasBeanClass()) {
-				Class<?> beanClass = bd.getBeanClass();
-				if (beanClass != beanType) {
-					ann = AnnotationUtils.findAnnotation(beanClass, annotationType);
+			BeanDefinition bd = getMergedBeanDefinition(beanName);
+			if (bd instanceof AbstractBeanDefinition) {
+				AbstractBeanDefinition abd = (AbstractBeanDefinition) bd;
+				if (abd.hasBeanClass()) {
+					ann = AnnotationUtils.findAnnotation(abd.getBeanClass(), annotationType);
 				}
 			}
 		}
@@ -722,16 +747,19 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		if (logger.isDebugEnabled()) {
 			logger.debug("Pre-instantiating singletons in " + this);
 		}
-
+		//所有bean的名字
 		// Iterate over a copy to allow for init methods which in turn register new bean definitions.
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 		// Trigger initialization of all non-lazy singleton beans...
+		// 触发所有非延迟加载单例beans的初始化，主要步骤为调用getBean
 		for (String beanName : beanNames) {
+			//合并父BeanDefinition
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
 				if (isFactoryBean(beanName)) {
+					//如果是FactoryBean则加上&
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
 						final FactoryBean<?> factory = (FactoryBean<?>) bean;
@@ -989,7 +1017,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private <T> NamedBeanHolder<T> resolveNamedBean(Class<T> requiredType, @Nullable Object... args) throws BeansException {
 		Assert.notNull(requiredType, "Required type must not be null");
 		String[] candidateNames = getBeanNamesForType(requiredType);
-
+		/**
+		 * 得到对象的名字，因为对象可能有别名故而需要处理别名
+		 */
 		if (candidateNames.length > 1) {
 			List<String> autowireCandidates = new ArrayList<>(candidateNames.length);
 			for (String beanName : candidateNames) {
@@ -1004,6 +1034,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		if (candidateNames.length == 1) {
 			String beanName = candidateNames[0];
+			//这的getBean才是真正获取对象的方法
 			return new NamedBeanHolder<>(beanName, getBean(beanName, requiredType, args));
 		}
 		else if (candidateNames.length > 1) {
@@ -1544,8 +1575,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						super.resolveCandidate(beanName, requiredType, beanFactory));
 			}
 		};
-		Object result = doResolveDependency(descriptorToUse, beanName, null, null);
-		return (result instanceof Optional ? (Optional<?>) result : Optional.ofNullable(result));
+		return Optional.ofNullable(doResolveDependency(descriptorToUse, beanName, null, null));
 	}
 
 
@@ -1606,9 +1636,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 			}
 			// Lenient fallback: dummy factory in case of original factory not found...
-			DefaultListableBeanFactory dummyFactory = new DefaultListableBeanFactory();
-			dummyFactory.serializationId = this.id;
-			return dummyFactory;
+			return new DefaultListableBeanFactory();
 		}
 	}
 
@@ -1626,7 +1654,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 
 	/**
-	 * A dependency descriptor for a multi-element declaration with nested elements.
+	 * A dependency descriptor marker for multiple elements.
 	 */
 	private static class MultiElementDescriptor extends NestedDependencyDescriptor {
 
@@ -1785,11 +1813,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		@Override
 		@Nullable
 		public Object getOrderSource(Object obj) {
-			String beanName = this.instancesToBeanNames.get(obj);
-			if (beanName == null || !containsBeanDefinition(beanName)) {
+			RootBeanDefinition beanDefinition = getRootBeanDefinition(this.instancesToBeanNames.get(obj));
+			if (beanDefinition == null) {
 				return null;
 			}
-			RootBeanDefinition beanDefinition = getMergedLocalBeanDefinition(beanName);
 			List<Object> sources = new ArrayList<>(2);
 			Method factoryMethod = beanDefinition.getResolvedFactoryMethod();
 			if (factoryMethod != null) {
@@ -1800,6 +1827,17 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				sources.add(targetType);
 			}
 			return sources.toArray();
+		}
+
+		@Nullable
+		private RootBeanDefinition getRootBeanDefinition(@Nullable String beanName) {
+			if (beanName != null && containsBeanDefinition(beanName)) {
+				BeanDefinition bd = getMergedBeanDefinition(beanName);
+				if (bd instanceof RootBeanDefinition) {
+					return (RootBeanDefinition) bd;
+				}
+			}
+			return null;
 		}
 	}
 

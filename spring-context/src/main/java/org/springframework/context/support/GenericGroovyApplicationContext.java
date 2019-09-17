@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,8 +41,8 @@ import org.springframework.lang.Nullable;
  * script, the context can be used with an inline bean definition closure as follows:
  *
  * <pre class="code">
- * import org.hibernate.SessionFactory
- * import org.apache.commons.dbcp.BasicDataSource
+ * imports org.hibernate.SessionFactory
+ * imports org.apache.commons.dbcp.BasicDataSource
  *
  * def context = new GenericGroovyApplicationContext()
  * context.reader.beans {
@@ -69,8 +69,8 @@ import org.springframework.lang.Nullable;
  * from an external resource (e.g. an "applicationContext.groovy" file):
  *
  * <pre class="code">
- * import org.hibernate.SessionFactory
- * import org.apache.commons.dbcp.BasicDataSource
+ * imports org.hibernate.SessionFactory
+ * imports org.apache.commons.dbcp.BasicDataSource
  *
  * beans {
  *     dataSource(BasicDataSource) {

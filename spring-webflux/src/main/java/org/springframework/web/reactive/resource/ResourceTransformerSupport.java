@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ public abstract class ResourceTransformerSupport implements ResourceTransformer 
 
 	/**
 	 * Configure a {@link ResourceUrlProvider} to use when resolving the public
-	 * URL of links in a transformed resource (e.g. import links in a CSS file).
+	 * URL of links in a transformed resource (e.g. imports links in a CSS file).
 	 * This is required only for links expressed as full paths and not for
 	 * relative links.
 	 * @param resourceUrlProvider the URL provider to use
@@ -96,7 +96,7 @@ public abstract class ResourceTransformerSupport implements ResourceTransformer 
 	 */
 	protected String toAbsolutePath(String path, ServerWebExchange exchange) {
 		String requestPath = exchange.getRequest().getURI().getPath();
-		String absolutePath = (path.startsWith("/") ? path : StringUtils.applyRelativePath(requestPath, path));
+		String absolutePath = StringUtils.applyRelativePath(requestPath, path);
 		return StringUtils.cleanPath(absolutePath);
 	}
 

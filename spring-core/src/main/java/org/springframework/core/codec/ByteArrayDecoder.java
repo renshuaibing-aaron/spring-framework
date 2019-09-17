@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,6 +34,7 @@ import org.springframework.util.MimeTypeUtils;
  */
 public class ByteArrayDecoder extends AbstractDataBufferDecoder<byte[]> {
 
+
 	public ByteArrayDecoder() {
 		super(MimeTypeUtils.ALL);
 	}
@@ -41,7 +42,8 @@ public class ByteArrayDecoder extends AbstractDataBufferDecoder<byte[]> {
 
 	@Override
 	public boolean canDecode(ResolvableType elementType, @Nullable MimeType mimeType) {
-		return (elementType.getRawClass() == byte[].class && super.canDecode(elementType, mimeType));
+		Class<?> clazz = elementType.getRawClass();
+		return (super.canDecode(elementType, mimeType) && byte[].class == clazz);
 	}
 
 	@Override

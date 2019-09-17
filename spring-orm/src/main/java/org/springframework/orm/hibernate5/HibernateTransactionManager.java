@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -145,7 +145,7 @@ public class HibernateTransactionManager extends AbstractPlatformTransactionMana
 
 	/**
 	 * Create a new HibernateTransactionManager instance.
-	 * @param sessionFactory the SessionFactory to manage transactions for
+	 * @param sessionFactory SessionFactory to manage transactions for
 	 */
 	public HibernateTransactionManager(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
@@ -199,7 +199,7 @@ public class HibernateTransactionManager extends AbstractPlatformTransactionMana
 	 * unwrapped to extract its target DataSource.
 	 * @see #setAutodetectDataSource
 	 * @see TransactionAwareDataSourceProxy
-	 * @see org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy
+	 * @see DataSourceUtils
 	 * @see org.springframework.jdbc.core.JdbcTemplate
 	 */
 	public void setDataSource(@Nullable DataSource dataSource) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -294,7 +294,10 @@ public class DefaultDataBuffer implements DataBuffer {
 	@Override
 	public DefaultDataBuffer write(DataBuffer... buffers) {
 		if (!ObjectUtils.isEmpty(buffers)) {
-			write(Arrays.stream(buffers).map(DataBuffer::asByteBuffer).toArray(ByteBuffer[]::new));
+			ByteBuffer[] byteBuffers =
+					Arrays.stream(buffers).map(DataBuffer::asByteBuffer)
+							.toArray(ByteBuffer[]::new);
+			write(byteBuffers);
 		}
 		return this;
 	}
@@ -378,7 +381,6 @@ public class DefaultDataBuffer implements DataBuffer {
 	}
 
 	/**
-	 * Calculate the capacity of the buffer.
 	 * @see io.netty.buffer.AbstractByteBufAllocator#calculateNewCapacity(int, int)
 	 */
 	private int calculateCapacity(int neededCapacity) {
@@ -428,7 +430,7 @@ public class DefaultDataBuffer implements DataBuffer {
 
 	@Override
 	public String toString() {
-		return String.format("DefaultDataBuffer (r: %d, w: %d, c: %d)",
+		return String.format("DefaultDataBuffer (r: %d, w %d, c %d)",
 				this.readPosition, this.writePosition, this.capacity);
 	}
 

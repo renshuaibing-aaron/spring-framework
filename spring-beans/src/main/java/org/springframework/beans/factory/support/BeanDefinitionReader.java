@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ public interface BeanDefinitionReader {
 	 * <p>A {@code null} return value suggests that absolute resource loading
 	 * is not available for this bean definition reader.
 	 * <p>This is mainly meant to be used for importing further resources
-	 * from within a bean definition resource, for example via the "import"
+	 * from within a bean definition resource, for example via the "imports"
 	 * tag in XML bean definitions. It is recommended, however, to apply
 	 * such imports relative to the defining resource; only explicit full
 	 * resource locations will trigger absolute resource loading.

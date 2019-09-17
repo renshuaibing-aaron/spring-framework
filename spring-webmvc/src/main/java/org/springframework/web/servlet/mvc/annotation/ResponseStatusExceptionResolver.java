@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,13 +81,12 @@ public class ResponseStatusExceptionResolver extends AbstractHandlerExceptionRes
 			}
 
 			if (ex.getCause() instanceof Exception) {
-				return doResolveException(request, response, handler, (Exception) ex.getCause());
+				ex = (Exception) ex.getCause();
+				return doResolveException(request, response, handler, ex);
 			}
 		}
 		catch (Exception resolveEx) {
-			if (logger.isWarnEnabled()) {
-				logger.warn("Failure while trying to resolve exception [" + ex.getClass().getName() + "]", resolveEx);
-			}
+			logger.warn("ResponseStatus handling resulted in exception", resolveEx);
 		}
 		return null;
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package org.springframework.jms.connection;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -57,11 +58,11 @@ public class JmsResourceHolder extends ResourceHolderSupport {
 
 	private boolean frozen = false;
 
-	private final LinkedList<Connection> connections = new LinkedList<>();
+	private final List<Connection> connections = new LinkedList<>();
 
-	private final LinkedList<Session> sessions = new LinkedList<>();
+	private final List<Session> sessions = new LinkedList<>();
 
-	private final Map<Connection, LinkedList<Session>> sessionsPerConnection = new HashMap<>();
+	private final Map<Connection, List<Session>> sessionsPerConnection = new HashMap<>();
 
 
 	/**
@@ -116,19 +117,10 @@ public class JmsResourceHolder extends ResourceHolderSupport {
 	}
 
 
-	/**
-	 * Return whether this resource holder is frozen, i.e. does not
-	 * allow for adding further Connections and Sessions to it.
-	 * @see #addConnection
-	 * @see #addSession
-	 */
 	public final boolean isFrozen() {
 		return this.frozen;
 	}
 
-	/**
-	 * Add the given Connection to this resource holder.
-	 */
 	public final void addConnection(Connection connection) {
 		Assert.isTrue(!this.frozen, "Cannot add Connection because JmsResourceHolder is frozen");
 		Assert.notNull(connection, "Connection must not be null");
@@ -137,92 +129,54 @@ public class JmsResourceHolder extends ResourceHolderSupport {
 		}
 	}
 
-	/**
-	 * Add the given Session to this resource holder.
-	 */
 	public final void addSession(Session session) {
 		addSession(session, null);
 	}
 
-	/**
-	 * Add the given Session to this resource holder,
-	 * registered for a specific Connection.
-	 */
 	public final void addSession(Session session, @Nullable Connection connection) {
 		Assert.isTrue(!this.frozen, "Cannot add Session because JmsResourceHolder is frozen");
 		Assert.notNull(session, "Session must not be null");
 		if (!this.sessions.contains(session)) {
 			this.sessions.add(session);
 			if (connection != null) {
-				LinkedList<Session> sessions =
-						this.sessionsPerConnection.computeIfAbsent(connection, k -> new LinkedList<>());
+				List<Session> sessions = this.sessionsPerConnection.computeIfAbsent(connection, k -> new LinkedList<>());
 				sessions.add(session);
 			}
 		}
 	}
 
-	/**
-	 * Determine whether the given Session is registered
-	 * with this resource holder.
-	 */
 	public boolean containsSession(Session session) {
 		return this.sessions.contains(session);
 	}
 
 
-	/**
-	 * Return this resource holder's default Connection,
-	 * or {@code null} if none.
-	 */
 	@Nullable
 	public Connection getConnection() {
-		return this.connections.peek();
+		return (!this.connections.isEmpty() ? this.connections.get(0) : null);
 	}
 
-	/**
-	 * Return this resource holder's Connection of the given type,
-	 * or {@code null} if none.
-	 */
 	@Nullable
-	public <C extends Connection> C getConnection(Class<C> connectionType) {
+	public Connection getConnection(Class<? extends Connection> connectionType) {
 		return CollectionUtils.findValueOfType(this.connections, connectionType);
 	}
 
-	/**
-	 * Return this resource holder's default Session,
-	 * or {@code null} if none.
-	 */
 	@Nullable
 	public Session getSession() {
-		return this.sessions.peek();
+		return (!this.sessions.isEmpty() ? this.sessions.get(0) : null);
 	}
 
-	/**
-	 * Return this resource holder's Session of the given type,
-	 * or {@code null} if none.
-	 */
 	@Nullable
-	public <S extends Session> S getSession(Class<S> sessionType) {
+	public Session getSession(Class<? extends Session> sessionType) {
 		return getSession(sessionType, null);
 	}
 
-	/**
-	 * Return this resource holder's Session of the given type
-	 * for the given connection, or {@code null} if none.
-	 */
 	@Nullable
-	public <S extends Session> S getSession(Class<S> sessionType, @Nullable Connection connection) {
-		LinkedList<Session> sessions =
-				(connection != null ? this.sessionsPerConnection.get(connection) : this.sessions);
+	public Session getSession(Class<? extends Session> sessionType, @Nullable Connection connection) {
+		List<Session> sessions = (connection != null ? this.sessionsPerConnection.get(connection) : this.sessions);
 		return CollectionUtils.findValueOfType(sessions, sessionType);
 	}
 
 
-	/**
-	 * Commit all of this resource holder's Sessions.
-	 * @throws JMSException if thrown from a Session commit attempt
-	 * @see Session#commit()
-	 */
 	public void commitAll() throws JMSException {
 		for (Session session : this.sessions) {
 			try {
@@ -264,10 +218,6 @@ public class JmsResourceHolder extends ResourceHolderSupport {
 		}
 	}
 
-	/**
-	 * Close all of this resource holder's Sessions and clear its state.
-	 * @see Session#close()
-	 */
 	public void closeAll() {
 		for (Session session : this.sessions) {
 			try {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1445,7 +1445,7 @@ public class AutowiredAnnotationBeanPostProcessorTests {
 	 * Verifies that a dependency on a {@link FactoryBean} can be autowired via
 	 * {@link Autowired @Autowired}, specifically addressing the JIRA issue
 	 * raised in <a
-	 * href="https://opensource.atlassian.com/projects/spring/browse/SPR-4040"
+	 * href="http://opensource.atlassian.com/projects/spring/browse/SPR-4040"
 	 * target="_blank">SPR-4040</a>.
 	 */
 	@Test

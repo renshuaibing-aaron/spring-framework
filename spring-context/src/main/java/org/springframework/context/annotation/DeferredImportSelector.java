@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ import org.springframework.lang.Nullable;
  * interface or use the {@link org.springframework.core.annotation.Order} annotation to
  * indicate a precedence against other {@link DeferredImportSelector}s.
  *
- * <p>Implementations may also provide an {@link #getImportGroup() import group} which
+ * <p>Implementations may also provide an {@link #getImportGroup() imports group} which
  * can provide additional sorting and filtering logic across different selectors.
  *
  * @author Phillip Webb
@@ -40,10 +40,8 @@ import org.springframework.lang.Nullable;
 public interface DeferredImportSelector extends ImportSelector {
 
 	/**
-	 * Return a specific import group.
-	 * <p>The default implementations return {@code null} for no grouping required.
-	 * @return the import group class, or {@code null} if none
-	 * @since 5.0
+	 * Return a specific imports group or {@code null} if no grouping is required.
+	 * @return the imports group class or {@code null}
 	 */
 	@Nullable
 	default Class<? extends Group> getImportGroup() {
@@ -52,7 +50,7 @@ public interface DeferredImportSelector extends ImportSelector {
 
 
 	/**
-	 * Interface used to group results from different import selectors.
+	 * Interface used to group results from different imports selectors.
 	 */
 	interface Group {
 
@@ -63,15 +61,14 @@ public interface DeferredImportSelector extends ImportSelector {
 		void process(AnnotationMetadata metadata, DeferredImportSelector selector);
 
 		/**
-		 * Return the {@link Entry entries} of which class(es) should be imported
-		 * for this group.
+		 * Return the {@link Entry entries} of which class(es) should be imported for this
+		 * group.
 		 */
 		Iterable<Entry> selectImports();
 
-
 		/**
 		 * An entry that holds the {@link AnnotationMetadata} of the importing
-		 * {@link Configuration} class and the class name to import.
+		 * {@link Configuration} class and the class name to imports.
 		 */
 		class Entry {
 
@@ -93,23 +90,23 @@ public interface DeferredImportSelector extends ImportSelector {
 			}
 
 			/**
-			 * Return the fully qualified name of the class to import.
+			 * Return the fully qualified name of the class to imports.
 			 */
 			public String getImportClassName() {
 				return this.importClassName;
 			}
 
 			@Override
-			public boolean equals(Object other) {
-				if (this == other) {
+			public boolean equals(Object o) {
+				if (this == o) {
 					return true;
 				}
-				if (other == null || getClass() != other.getClass()) {
+				if (o == null || getClass() != o.getClass()) {
 					return false;
 				}
-				Entry entry = (Entry) other;
-				return (Objects.equals(this.metadata, entry.metadata) &&
-						Objects.equals(this.importClassName, entry.importClassName));
+				Entry entry = (Entry) o;
+				return Objects.equals(this.metadata, entry.metadata) &&
+						Objects.equals(this.importClassName, entry.importClassName);
 			}
 
 			@Override

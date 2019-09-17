@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,6 +35,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 /**
+ *
+ * 这个类说起来相当复杂
+ * 要从他的父类BeanPostProcessor说起，可以先查看他的父类，
+ * 看完父类之后再来下面的注释
  * {@link org.springframework.beans.factory.config.BeanPostProcessor}
  * implementation that passes the ApplicationContext to beans that
  * implement the {@link EnvironmentAware}, {@link EmbeddedValueResolverAware},
@@ -102,6 +106,7 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 	private void invokeAwareInterfaces(Object bean) {
 		if (bean instanceof Aware) {
 			if (bean instanceof EnvironmentAware) {
+
 				((EnvironmentAware) bean).setEnvironment(this.applicationContext.getEnvironment());
 			}
 			if (bean instanceof EmbeddedValueResolverAware) {
@@ -116,7 +121,11 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			if (bean instanceof MessageSourceAware) {
 				((MessageSourceAware) bean).setMessageSource(this.applicationContext);
 			}
+			//spring帮你set一个applicationContext对象
+			//所以当我们自己的一个对象实现了ApplicationContextAware对象只需要提供setter就能得到applicationContext对象
+			//此处应该有鲜花。。。。
 			if (bean instanceof ApplicationContextAware) {
+				if (!bean.getClass().getSimpleName().equals("IndexDao"))
 				((ApplicationContextAware) bean).setApplicationContext(this.applicationContext);
 			}
 		}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  *
  * <p>Provides options to create {@link UriBuilder} instances with a common
  * base URI, alternative encoding mode strategies, among others.
+ *
  *
  * @author Rossen Stoyanchev
  * @since 5.0
@@ -221,27 +222,33 @@ public class DefaultUriBuilderFactory implements UriBuilderFactory {
 
 		private final UriComponentsBuilder uriComponentsBuilder;
 
+
 		public DefaultUriBuilder(String uriTemplate) {
 			this.uriComponentsBuilder = initUriComponentsBuilder(uriTemplate);
 		}
 
 		private UriComponentsBuilder initUriComponentsBuilder(String uriTemplate) {
-			UriComponentsBuilder result;
-			if (!StringUtils.hasLength(uriTemplate)) {
-				result = (baseUri != null ? baseUri.cloneBuilder() : UriComponentsBuilder.newInstance());
+
+			if (StringUtils.isEmpty(uriTemplate)) {
+				return baseUri != null ? baseUri.cloneBuilder() : UriComponentsBuilder.newInstance();
 			}
-			else if (baseUri != null) {
-				UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uriTemplate);
-				UriComponents uri = builder.build();
-				result = (uri.getHost() == null ? baseUri.cloneBuilder().uriComponents(uri) : builder);
+
+			UriComponentsBuilder result;
+			if (baseUri != null) {
+				UriComponentsBuilder uricBuilder = UriComponentsBuilder.fromUriString(uriTemplate);
+				UriComponents uric = uricBuilder.build();
+				result = uric.getHost() == null ? baseUri.cloneBuilder().uriComponents(uric) : uricBuilder;
 			}
 			else {
 				result = UriComponentsBuilder.fromUriString(uriTemplate);
 			}
+
 			if (encodingMode.equals(EncodingMode.TEMPLATE_AND_VALUES)) {
 				result.encode();
 			}
+
 			parsePathIfNecessary(result);
+
 			return result;
 		}
 

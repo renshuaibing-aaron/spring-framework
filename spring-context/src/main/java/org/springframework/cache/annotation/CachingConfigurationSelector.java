@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,7 +76,7 @@ public class CachingConfigurationSelector extends AdviceModeImportSelector<Enabl
 
 	/**
 	 * Return the imports to use if the {@link AdviceMode} is set to {@link AdviceMode#PROXY}.
-	 * <p>Take care of adding the necessary JSR-107 import if it is available.
+	 * <p>Take care of adding the necessary JSR-107 imports if it is available.
 	 */
 	private String[] getProxyImports() {
 		List<String> result = new ArrayList<>(3);
@@ -90,7 +90,7 @@ public class CachingConfigurationSelector extends AdviceModeImportSelector<Enabl
 
 	/**
 	 * Return the imports to use if the {@link AdviceMode} is set to {@link AdviceMode#ASPECTJ}.
-	 * <p>Take care of adding the necessary JSR-107 import if it is available.
+	 * <p>Take care of adding the necessary JSR-107 imports if it is available.
 	 */
 	private String[] getAspectJImports() {
 		List<String> result = new ArrayList<>(2);

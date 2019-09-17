@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@ package org.springframework.http.server.reactive;
 import java.net.URISyntaxException;
 import java.util.function.BiFunction;
 
-import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,10 +39,6 @@ import org.springframework.util.Assert;
  */
 public class ReactorHttpHandlerAdapter implements BiFunction<HttpServerRequest, HttpServerResponse, Mono<Void>> {
 
-	// 5.0.x only: no buffer pooling
-	private static final NettyDataBufferFactory BUFFER_FACTORY =
-			new NettyDataBufferFactory(new UnpooledByteBufAllocator(false));
-
 	private static final Log logger = LogFactory.getLog(ReactorHttpHandlerAdapter.class);
 
 
@@ -58,11 +53,12 @@ public class ReactorHttpHandlerAdapter implements BiFunction<HttpServerRequest, 
 
 	@Override
 	public Mono<Void> apply(HttpServerRequest request, HttpServerResponse response) {
+		NettyDataBufferFactory bufferFactory = new NettyDataBufferFactory(response.alloc());
 		ServerHttpRequest adaptedRequest;
 		ServerHttpResponse adaptedResponse;
 		try {
-			adaptedRequest = new ReactorServerHttpRequest(request, BUFFER_FACTORY);
-			adaptedResponse = new ReactorServerHttpResponse(response, BUFFER_FACTORY);
+			adaptedRequest = new ReactorServerHttpRequest(request, bufferFactory);
+			adaptedResponse = new ReactorServerHttpResponse(response, bufferFactory);
 		}
 		catch (URISyntaxException ex) {
 			if (logger.isWarnEnabled()) {

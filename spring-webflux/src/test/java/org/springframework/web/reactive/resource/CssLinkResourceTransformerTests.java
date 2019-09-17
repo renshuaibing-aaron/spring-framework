@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,9 +41,7 @@ import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for {@link CssLinkResourceTransformer}.
- *
  * @author Rossen Stoyanchev
- * @author Sam Brannen
  */
 public class CssLinkResourceTransformerTests {
 
@@ -82,11 +80,11 @@ public class CssLinkResourceTransformerTests {
 		Resource css = new ClassPathResource("test/main.css", getClass());
 
 		String expected = "\n" +
-				"@import url(\"/static/bar-11e16cf79faee7ac698c805cf28248d2.css?#iefix\");\n" +
-				"@import url('/static/bar-11e16cf79faee7ac698c805cf28248d2.css#bla-normal');\n" +
-				"@import url(/static/bar-11e16cf79faee7ac698c805cf28248d2.css);\n\n" +
-				"@import \"/static/foo-e36d2e05253c6c7085a91522ce43a0b4.css\";\n" +
-				"@import '/static/foo-e36d2e05253c6c7085a91522ce43a0b4.css';\n\n" +
+				"@imports url(\"/static/bar-11e16cf79faee7ac698c805cf28248d2.css?#iefix\");\n" +
+				"@imports url('/static/bar-11e16cf79faee7ac698c805cf28248d2.css#bla-normal');\n" +
+				"@imports url(/static/bar-11e16cf79faee7ac698c805cf28248d2.css);\n\n" +
+				"@imports \"/static/foo-e36d2e05253c6c7085a91522ce43a0b4.css\";\n" +
+				"@imports '/static/foo-e36d2e05253c6c7085a91522ce43a0b4.css';\n\n" +
 				"body { background: url(\"/static/images/image-f448cd1d5dba82b774f3202c878230b3.png?#iefix\") }\n";
 
 		StepVerifier.create(this.transformerChain.transform(exchange, css).cast(TransformedResource.class))
@@ -117,7 +115,7 @@ public class CssLinkResourceTransformerTests {
 		Resource externalCss = new ClassPathResource("test/external.css", getClass());
 		StepVerifier.create(transformerChain.transform(exchange, externalCss).cast(TransformedResource.class))
 				.consumeNextWith(resource -> {
-					String expected = "@import url(\"https://example.org/fonts/css\");\n" +
+					String expected = "@imports url(\"http://example.org/fonts/css\");\n" +
 							"body { background: url(\"file:///home/spring/image.png\") }\n" +
 							"figure { background: url(\"//example.org/style.css\")}";
 					String result = new String(resource.getByteArray(), StandardCharsets.UTF_8);
@@ -126,7 +124,7 @@ public class CssLinkResourceTransformerTests {
 				}).expectComplete().verify();
 
 		Mockito.verify(resolverChain, Mockito.never())
-				.resolveUrlPath("https://example.org/fonts/css", Collections.singletonList(externalCss));
+				.resolveUrlPath("http://example.org/fonts/css", Collections.singletonList(externalCss));
 		Mockito.verify(resolverChain, Mockito.never())
 				.resolveUrlPath("file:///home/spring/image.png", Collections.singletonList(externalCss));
 		Mockito.verify(resolverChain, Mockito.never())
@@ -160,30 +158,6 @@ public class CssLinkResourceTransformerTests {
 		Files.deleteIfExists(copy);
 		Files.copy(original, copy);
 		copy.toFile().deleteOnExit();
-	}
-
-	@Test // https://github.com/spring-projects/spring-framework/issues/22602
-	public void transformEmptyUrlFunction() throws Exception {
-		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/static/empty_url_function.css"));
-		Resource css = getResource("empty_url_function.css");
-		String expected =
-				".fooStyle {\n" +
-				"\tbackground: transparent url() no-repeat left top;\n" +
-				"}";
-
-		StepVerifier.create(this.transformerChain.transform(exchange, css)
-				.cast(TransformedResource.class))
-				.consumeNextWith(transformedResource -> {
-					String result = new String(transformedResource.getByteArray(), StandardCharsets.UTF_8);
-					result = StringUtils.deleteAny(result, "\r");
-					assertEquals(expected, result);
-				})
-				.expectComplete()
-				.verify();
-	}
-
-	private Resource getResource(String filePath) {
-		return new ClassPathResource("test/" + filePath, getClass());
 	}
 
 }

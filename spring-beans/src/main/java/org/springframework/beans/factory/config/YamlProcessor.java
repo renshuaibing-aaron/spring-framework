@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,11 +72,11 @@ public abstract class YamlProcessor {
 	 * to properties before the match is made. E.g.
 	 * <pre class="code">
 	 * environment: dev
-	 * url: https://dev.bar.com
+	 * url: http://dev.bar.com
 	 * name: Developer Setup
 	 * ---
 	 * environment: prod
-	 * url:https://foo.bar.com
+	 * url:http://foo.bar.com
 	 * name: My Cool App
 	 * </pre>
 	 * when mapped with
@@ -87,7 +87,7 @@ public abstract class YamlProcessor {
 	 * would end up as
 	 * <pre class="code">
 	 * environment=prod
-	 * url=https://foo.bar.com
+	 * url=http://foo.bar.com
 	 * name=My Cool App
 	 * </pre>
 	 */
@@ -161,7 +161,8 @@ public abstract class YamlProcessor {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loading from YAML: " + resource);
 			}
-			try (Reader reader = new UnicodeReader(resource.getInputStream())) {
+			Reader reader = new UnicodeReader(resource.getInputStream());
+			try {
 				for (Object object : yaml.loadAll(reader)) {
 					if (object != null && process(asMap(object), callback)) {
 						count++;
@@ -174,6 +175,9 @@ public abstract class YamlProcessor {
 					logger.debug("Loaded " + count + " document" + (count > 1 ? "s" : "") +
 							" from YAML resource: " + resource);
 				}
+			}
+			finally {
+				reader.close();
 			}
 		}
 		catch (IOException ex) {

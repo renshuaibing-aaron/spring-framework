@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
-import org.springframework.lang.Nullable;
 import org.springframework.objenesis.ObjenesisException;
 import org.springframework.objenesis.SpringObjenesis;
 import org.springframework.util.Assert;
@@ -78,8 +77,8 @@ import static java.util.stream.Collectors.*;
  * return type, possibly with or without an annotation.
  *
  * <pre>
- * import static org.springframework.web.method.ResolvableMethod.on;
- * import static org.springframework.web.method.MvcAnnotationPredicates.requestMapping;
+ * imports static org.springframework.web.method.ResolvableMethod.on;
+ * imports static org.springframework.web.method.MvcAnnotationPredicates.requestMapping;
  *
  * // Return type
  * on(TestController.class).resolveReturnType(Foo.class);
@@ -102,7 +101,7 @@ import static java.util.stream.Collectors.*;
  * of methods with a wide array of argument types and parameter annotations.
  *
  * <pre>
- * import static org.springframework.web.method.MvcAnnotationPredicates.requestParam;
+ * imports static org.springframework.web.method.MvcAnnotationPredicates.requestParam;
  *
  * ResolvableMethod testMethod = ResolvableMethod.on(getClass()).named("handle").build();
  *
@@ -121,7 +120,6 @@ import static java.util.stream.Collectors.*;
  * </pre>
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  */
 public class ResolvableMethod {
 
@@ -135,7 +133,7 @@ public class ResolvableMethod {
 
 
 	private ResolvableMethod(Method method) {
-		Assert.notNull(method, "Method is required");
+		Assert.notNull(method, "method is required");
 		this.method = method;
 	}
 
@@ -204,14 +202,14 @@ public class ResolvableMethod {
 		return new ArgResolver().annotNotPresent(annotationTypes);
 	}
 
+
 	@Override
 	public String toString() {
 		return "ResolvableMethod=" + formatMethod();
 	}
 
-
 	private String formatMethod() {
-		return (method().getName() +
+		return (this.method().getName() +
 				Arrays.stream(this.method.getParameters())
 						.map(this::formatParameter)
 						.collect(joining(",\n\t", "(\n\t", "\n)")));
@@ -248,7 +246,7 @@ public class ResolvableMethod {
 
 
 	/**
-	 * Create a {@code ResolvableMethod} builder for the given handler class.
+	 * Main entry point providing access to a {@code ResolvableMethod} builder.
 	 */
 	public static <T> Builder<T> on(Class<T> objectClass) {
 		return new Builder<>(objectClass);
@@ -264,10 +262,12 @@ public class ResolvableMethod {
 
 		private final List<Predicate<Method>> filters = new ArrayList<>(4);
 
+
 		private Builder(Class<?> objectClass) {
 			Assert.notNull(objectClass, "Class must not be null");
 			this.objectClass = objectClass;
 		}
+
 
 		private void addFilter(String message, Predicate<Method> filter) {
 			this.filters.add(new LabeledPredicate<>(message, filter));
@@ -277,7 +277,7 @@ public class ResolvableMethod {
 		 * Filter on methods with the given name.
 		 */
 		public Builder<T> named(String methodName) {
-			addFilter("methodName=" + methodName, method -> method.getName().equals(methodName));
+			addFilter("methodName=" + methodName, m -> m.getName().equals(methodName));
 			return this;
 		}
 
@@ -384,6 +384,7 @@ public class ResolvableMethod {
 			return new ResolvableMethod(method);
 		}
 
+
 		// Build & resolve shortcuts...
 
 		/**
@@ -437,6 +438,7 @@ public class ResolvableMethod {
 			return returning(returnType).build().returnType();
 		}
 
+
 		@Override
 		public String toString() {
 			return "ResolvableMethod.Builder[\n" +
@@ -450,7 +452,6 @@ public class ResolvableMethod {
 		}
 	}
 
-
 	/**
 	 * Predicate with a descriptive label.
 	 */
@@ -459,6 +460,7 @@ public class ResolvableMethod {
 		private final String label;
 
 		private final Predicate<T> delegate;
+
 
 		private LabeledPredicate(String label, Predicate<T> delegate) {
 			this.label = label;
@@ -492,13 +494,13 @@ public class ResolvableMethod {
 		}
 	}
 
-
 	/**
 	 * Resolver for method arguments.
 	 */
 	public class ArgResolver {
 
 		private final List<Predicate<MethodParameter>> filters = new ArrayList<>(4);
+
 
 		@SafeVarargs
 		private ArgResolver(Predicate<MethodParameter>... filter) {
@@ -591,18 +593,17 @@ public class ResolvableMethod {
 		}
 	}
 
-
 	private static class MethodInvocationInterceptor
 			implements org.springframework.cglib.proxy.MethodInterceptor, MethodInterceptor {
 
 		private Method invokedMethod;
+
 
 		Method getInvokedMethod() {
 			return this.invokedMethod;
 		}
 
 		@Override
-		@Nullable
 		public Object intercept(Object object, Method method, Object[] args, MethodProxy proxy) {
 			if (ReflectionUtils.isObjectMethod(method)) {
 				return ReflectionUtils.invokeMethod(method, object, args);
@@ -614,7 +615,6 @@ public class ResolvableMethod {
 		}
 
 		@Override
-		@Nullable
 		public Object invoke(org.aopalliance.intercept.MethodInvocation inv) throws Throwable {
 			return intercept(inv.getThis(), inv.getMethod(), inv.getArguments(), null);
 		}

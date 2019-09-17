@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,6 @@ import kotlin.reflect.jvm.ReflectJvmMapping;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Helper class that encapsulates the specification of a method parameter, i.e. a {@link Method}
@@ -62,7 +61,6 @@ public class MethodParameter {
 
 	private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
-
 	private final Executable executable;
 
 	private final int parameterIndex;
@@ -70,13 +68,12 @@ public class MethodParameter {
 	@Nullable
 	private volatile Parameter parameter;
 
-	private int nestingLevel;
+	private int nestingLevel = 1;
 
 	/** Map from Integer level to Integer type index */
 	@Nullable
 	Map<Integer, Integer> typeIndexesPerLevel;
 
-	/** The containing class. Could also be supplied by overriding {@link #getContainingClass()} */
 	@Nullable
 	private volatile Class<?> containingClass;
 
@@ -379,12 +376,6 @@ public class MethodParameter {
 		this.containingClass = containingClass;
 	}
 
-	/**
-	 * Return the containing class for this method parameter.
-	 * @return a specific containing class (potentially a subclass of the
-	 * declaring class), or otherwise simply the declaring class itself
-	 * @see #getDeclaringClass()
-	 */
 	public Class<?> getContainingClass() {
 		Class<?> containingClass = this.containingClass;
 		return (containingClass != null ? containingClass : getDeclaringClass());
@@ -659,16 +650,12 @@ public class MethodParameter {
 			return false;
 		}
 		MethodParameter otherParam = (MethodParameter) other;
-		return (getContainingClass() == otherParam.getContainingClass() &&
-				ObjectUtils.nullSafeEquals(this.typeIndexesPerLevel, otherParam.typeIndexesPerLevel) &&
-				this.nestingLevel == otherParam.nestingLevel &&
-				this.parameterIndex == otherParam.parameterIndex &&
-				this.executable.equals(otherParam.executable));
+		return (this.parameterIndex == otherParam.parameterIndex && getExecutable().equals(otherParam.getExecutable()));
 	}
 
 	@Override
 	public int hashCode() {
-		return (31 * this.executable.hashCode() + this.parameterIndex);
+		return (getExecutable().hashCode() * 31 + this.parameterIndex);
 	}
 
 	@Override
@@ -738,16 +725,8 @@ public class MethodParameter {
 	protected static int findParameterIndex(Parameter parameter) {
 		Executable executable = parameter.getDeclaringExecutable();
 		Parameter[] allParams = executable.getParameters();
-		// Try first with identity checks for greater performance.
 		for (int i = 0; i < allParams.length; i++) {
 			if (parameter == allParams[i]) {
-				return i;
-			}
-		}
-		// Potentially try again with object equality checks in order to avoid race
-		// conditions while invoking java.lang.reflect.Executable.getParameters().
-		for (int i = 0; i < allParams.length; i++) {
-			if (parameter.equals(allParams[i])) {
 				return i;
 			}
 		}

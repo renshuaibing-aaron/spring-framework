@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -259,9 +259,7 @@ public class MockHttpServletRequestTests {
 		assertEquals("bar", cookies[0].getValue());
 		assertEquals("baz", cookies[1].getName());
 		assertEquals("qux", cookies[1].getValue());
-
-		assertEquals(1, cookieHeaders.size());
-		assertEquals("foo=bar; baz=qux", cookieHeaders.get(0));
+		assertEquals(Arrays.asList("foo=bar", "baz=qux"), cookieHeaders);
 	}
 
 	@Test
@@ -310,7 +308,6 @@ public class MockHttpServletRequestTests {
 		List<Locale> actual = Collections.list(request.getLocales());
 		assertEquals(Arrays.asList(Locale.forLanguageTag("fr-ch"), Locale.forLanguageTag("fr"),
 				Locale.forLanguageTag("en"), Locale.forLanguageTag("de")), actual);
-		assertEquals(headerValue, request.getHeader("Accept-Language"));
 	}
 
 	@Test
@@ -503,25 +500,25 @@ public class MockHttpServletRequestTests {
 	}
 
 	@Test
-	public void httpHeaderRfcFormattedDate() {
+	public void httpHeaderRfcFormatedDate() {
 		request.addHeader(HttpHeaders.IF_MODIFIED_SINCE, "Tue, 21 Jul 2015 10:00:00 GMT");
 		assertEquals(1437472800000L, request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE));
 	}
 
 	@Test
-	public void httpHeaderFirstVariantFormattedDate() {
+	public void httpHeaderFirstVariantFormatedDate() {
 		request.addHeader(HttpHeaders.IF_MODIFIED_SINCE, "Tue, 21-Jul-15 10:00:00 GMT");
 		assertEquals(1437472800000L, request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE));
 	}
 
 	@Test
-	public void httpHeaderSecondVariantFormattedDate() {
+	public void httpHeaderSecondVariantFormatedDate() {
 		request.addHeader(HttpHeaders.IF_MODIFIED_SINCE, "Tue Jul 21 10:00:00 2015");
 		assertEquals(1437472800000L, request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void httpHeaderFormattedDateError() {
+	public void httpHeaderFormatedDateError() {
 		request.addHeader(HttpHeaders.IF_MODIFIED_SINCE, "This is not a date");
 		request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
 	}

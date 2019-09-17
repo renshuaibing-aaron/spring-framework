@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,10 +26,10 @@ import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * Indicates one or more resources containing bean definitions to import.
+ * Indicates one or more resources containing bean definitions to imports.
  *
  * <p>Like {@link Import @Import}, this annotation provides functionality similar to
- * the {@code <import/>} element in Spring XML. It is typically used when designing
+ * the {@code <imports/>} element in Spring XML. It is typically used when designing
  * {@link Configuration @Configuration} classes to be bootstrapped by an
  * {@link AnnotationConfigApplicationContext}, but where some XML functionality such
  * as namespaces is still necessary.
@@ -63,7 +63,7 @@ public @interface ImportResource {
 	String[] value() default {};
 
 	/**
-	 * Resource locations from which to import.
+	 * Resource locations from which to imports.
 	 * <p>Supports resource-loading prefixes such as {@code classpath:},
 	 * {@code file:}, etc.
 	 * <p>Consult the Javadoc for {@link #reader} for details on how resources

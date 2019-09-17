@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -123,7 +123,7 @@ public class FlushingIntegrationTests extends AbstractHttpHandlerIntegrationTest
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			String path = request.getURI().getPath();
 			if (path.endsWith("write-and-flush")) {
-				Flux<Publisher<DataBuffer>> responseBody = testInterval(Duration.ofMillis(50), 2)
+				Flux<Publisher<DataBuffer>> responseBody = interval(Duration.ofMillis(50), 2)
 						.map(l -> toDataBuffer("data" + l + "\n", response.bufferFactory()))
 						.map(Flux::just);
 				return response.writeAndFlushWith(responseBody.concatWith(Flux.never()));

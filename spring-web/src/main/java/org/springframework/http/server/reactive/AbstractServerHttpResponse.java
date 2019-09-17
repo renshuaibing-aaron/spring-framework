@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,6 @@ import org.springframework.util.MultiValueMap;
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @author Sebastien Deleuze
- * @author Brian Clozel
  * @since 5.0
  */
 public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
@@ -174,21 +173,13 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 	@Override
 	public final Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
 		return new ChannelSendOperator<>(body,
-				writePublisher -> doCommit(() -> writeWithInternal(writePublisher)))
-				.doOnError(t -> removeContentLength());
+				writePublisher -> doCommit(() -> writeWithInternal(writePublisher)));
 	}
 
 	@Override
 	public final Mono<Void> writeAndFlushWith(Publisher<? extends Publisher<? extends DataBuffer>> body) {
 		return new ChannelSendOperator<>(body,
-				writePublisher -> doCommit(() -> writeAndFlushWithInternal(writePublisher)))
-				.doOnError(t -> removeContentLength());
-	}
-
-	private void removeContentLength() {
-		if (!this.isCommitted()) {
-			this.getHeaders().remove(HttpHeaders.CONTENT_LENGTH);
-		}
+				writePublisher -> doCommit(() -> writeAndFlushWithInternal(writePublisher)));
 	}
 
 	@Override

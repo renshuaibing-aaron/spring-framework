@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -103,7 +103,7 @@ import org.springframework.util.StringUtils;
  * XML bean definition file uses just the &lt;bean/&gt;-style syntax
  * (in an effort to illustrate using the {@link ScriptFactoryPostProcessor} itself).
  * In reality, you would never create a &lt;bean/&gt; definition for a
- * {@link ScriptFactoryPostProcessor} explicitly; rather you would import the
+ * {@link ScriptFactoryPostProcessor} explicitly; rather you would imports the
  * tags from the {@code 'lang'} namespace and simply create scripted
  * beans using the tags in that namespace... as part of doing so, a
  * {@link ScriptFactoryPostProcessor} will implicitly be created for you.

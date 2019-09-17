@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,7 +76,13 @@ public interface ClientRequest {
 	 * @return the attribute value
 	 */
 	default Optional<Object> attribute(String name) {
-		return Optional.ofNullable(attributes().get(name));
+		Map<String, Object> attributes = attributes();
+		if (attributes.containsKey(name)) {
+			return Optional.of(attributes.get(name));
+		}
+		else {
+			return Optional.empty();
+		}
 	}
 
 	/**
@@ -85,7 +91,8 @@ public interface ClientRequest {
 	Map<String, Object> attributes();
 
 	/**
-	 * Write this request to the given {@link ClientHttpRequest}.
+	 * Writes this request to the given {@link ClientHttpRequest}.
+	 *
 	 * @param request the client http request to write to
 	 * @param strategies the strategies to use when writing
 	 * @return {@code Mono<Void>} to indicate when writing is complete

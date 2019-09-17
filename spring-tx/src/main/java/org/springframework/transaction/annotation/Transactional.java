@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,12 +27,7 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.transaction.TransactionDefinition;
 
 /**
- * Describes a transaction attribute on an individual method or on a class.
- *
- * <p>At the class level, this annotation applies as a default to all methods of
- * the declaring class and its subclasses. Note that it does not apply to ancestor
- * classes up the class hierarchy; methods need to be locally redeclared in order
- * to participate in a subclass-level annotation.
+ * Describes transaction attributes on a method or class.
  *
  * <p>This annotation type is generally directly comparable to Spring's
  * {@link org.springframework.transaction.interceptor.RuleBasedTransactionAttribute}
@@ -56,7 +51,7 @@ import org.springframework.transaction.TransactionDefinition;
  * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute
  * @see org.springframework.transaction.interceptor.RuleBasedTransactionAttribute
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented

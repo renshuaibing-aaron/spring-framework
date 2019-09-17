@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ import org.springframework.context.annotation.Import;
  * </pre>
  *
  * <p>Only one {@code @Configuration} class should have the {@code @EnableWebFlux}
- * annotation in order to import the Spring WebFlux configuration. There can
+ * annotation in order to imports the Spring WebFlux configuration. There can
  * however be multiple {@code @Configuration} classes that implement
  * {@code WebFluxConfigurer} that customize the provided configuration.
  *

@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -83,7 +83,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * </ul>
  *
  * <p><strong>Note:</strong> This class uses values from "Forwarded"
- * (<a href="https://tools.ietf.org/html/rfc7239">RFC 7239</a>),
+ * (<a href="http://tools.ietf.org/html/rfc7239">RFC 7239</a>),
  * "X-Forwarded-Host", "X-Forwarded-Port", and "X-Forwarded-Proto" headers,
  * if present, in order to reflect the client-originated protocol and address.
  * Consider using the {@code ForwardedHeaderFilter} in order to choose from a
@@ -239,7 +239,7 @@ public class MvcUriComponentsBuilder {
 	 * </pre>
 	 * A UriComponentsBuilder can be created:
 	 * <pre class="code">
-	 * // Inline style with static import of "MvcUriComponentsBuilder.on"
+	 * // Inline style with static imports of "MvcUriComponentsBuilder.on"
 	 *
 	 * MvcUriComponentsBuilder.fromMethodCall(
 	 * 		on(AddressController.class).getAddressesForCountry("US")).buildAndExpand(1);
@@ -357,10 +357,11 @@ public class MvcUriComponentsBuilder {
 		RequestMappingInfoHandlerMapping handlerMapping = getRequestMappingInfoHandlerMapping();
 		List<HandlerMethod> handlerMethods = handlerMapping.getHandlerMethodsForMappingName(name);
 		if (handlerMethods == null) {
-			throw new IllegalArgumentException("Mapping not found: " + name);
+			throw new IllegalArgumentException("Mapping mappingName not found: " + name);
 		}
 		if (handlerMethods.size() != 1) {
-			throw new IllegalArgumentException("No unique match for mapping " + name + ": " + handlerMethods);
+			throw new IllegalArgumentException("No unique match for mapping mappingName " +
+					name + ": " + handlerMethods);
 		}
 		HandlerMethod handlerMethod = handlerMethods.get(0);
 		Class<?> controllerType = handlerMethod.getBeanType();
@@ -439,7 +440,7 @@ public class MvcUriComponentsBuilder {
 			return "/";
 		}
 		String[] paths = requestMapping.path();
-		if (ObjectUtils.isEmpty(paths) || !StringUtils.hasLength(paths[0])) {
+		if (ObjectUtils.isEmpty(paths) || StringUtils.isEmpty(paths[0])) {
 			return "/";
 		}
 		if (paths.length > 1 && logger.isWarnEnabled()) {
@@ -455,7 +456,7 @@ public class MvcUriComponentsBuilder {
 			throw new IllegalArgumentException("No @RequestMapping on: " + method.toGenericString());
 		}
 		String[] paths = requestMapping.path();
-		if (ObjectUtils.isEmpty(paths) || !StringUtils.hasLength(paths[0])) {
+		if (ObjectUtils.isEmpty(paths) || StringUtils.isEmpty(paths[0])) {
 			return "/";
 		}
 		if (paths.length > 1 && logger.isWarnEnabled()) {
@@ -566,7 +567,7 @@ public class MvcUriComponentsBuilder {
 	 * and the result can then be used to create a {@code UriComponentsBuilder}
 	 * via {@link #fromMethodCall(Object)}.
 	 * <p>Note that this is a shorthand version of {@link #controller(Class)} intended
-	 * for inline use (with a static import), for example:
+	 * for inline use (with a static imports), for example:
 	 * <pre class="code">
 	 * MvcUriComponentsBuilder.fromMethodCall(on(FooController.class).getFoo(1)).build();
 	 * </pre>
