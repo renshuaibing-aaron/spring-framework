@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+
+	<bean id="userDao" class="com.aaron.ren.aop.UserDaoImpl"/>
+
+	<bean id="logger" class="com.aaron.ren.aop.Logger" />
+
+	<!-- 切面：切入点和通知 -->
+	<aop:config>
+		<aop:aspect id="logger" ref="logger">
+			<!--定义切点，是连接点的集合-->
+			<aop:pointcut expression="execution(* com.aaron.ren.aop..*.*(..))" id="udpateUserMethod" />
+			<!--定义通知类型-->
+			<aop:before method="recordBefore" pointcut-ref="udpateUserMethod" />
+			<aop:after method="recordAfter" pointcut-ref="udpateUserMethod" />
+		</aop:aspect>
+	</aop:config>
+
+</beans>

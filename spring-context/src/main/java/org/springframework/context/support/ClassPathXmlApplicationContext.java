@@ -24,6 +24,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * ApplicationContext 继承自 BeanFactory，但是它不应该被理解为 BeanFactory 的实现类，
+ * 而是说其内部持有一个实例化的 BeanFactory（DefaultListableBeanFactory）。以后所有的 BeanFactory 相关的操作其实是给这个实例来处理的。
  * Standalone XML application context, taking the context definition files
  * from the class path, interpreting plain paths as class path resource names
  * that include the package path (e.g. "mypackage/myresource.txt"). Useful for
@@ -65,6 +67,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	}
 
 	/**
+	 *  如果已经有 ApplicationContext 并需要配置成父子关系，那么调用这个构造方法
 	 * Create a new ClassPathXmlApplicationContext for bean-style configuration.
 	 * @param parent the parent context
 	 * @see #setConfigLocation
@@ -139,6 +142,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			throws BeansException {
 
 		super(parent);
+		// 根据提供的路径，处理成配置文件数组(以分号、逗号、空格、tab、换行符分割)
 		setConfigLocations(configLocations);
 		if (refresh) {
 			refresh();

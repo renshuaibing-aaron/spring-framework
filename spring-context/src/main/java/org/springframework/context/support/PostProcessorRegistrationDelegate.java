@@ -213,7 +213,7 @@ final class PostProcessorRegistrationDelegate {
 	public static void registerBeanPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
 
-		//从beanDefinitionMap中得到所有的BeanPostProcessor
+		//从beanDefinitionMap中得到所有的BeanPostProcessor（后置处理器　）
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
 		// Register BeanPostProcessorChecker that logs an info message when
@@ -222,6 +222,7 @@ final class PostProcessorRegistrationDelegate {
 		int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
 		beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
 
+		//对这些后置处理器进行分类存储
 		// Separate between BeanPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
 		List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
@@ -244,14 +245,17 @@ final class PostProcessorRegistrationDelegate {
 			}
 		}
 		System.out.println("===测试=========="+priorityOrderedPostProcessors.size());
+		//以下这些就是针对不同类型的后置处理器分别进行注册实例化
 		//priorityOrderedPostProcessors.remove(1);
 		// First, register the BeanPostProcessors that implement PriorityOrdered.
 		sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
 		registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);
 
+
 		// Next, register the BeanPostProcessors that implement Ordered.
 		List<BeanPostProcessor> orderedPostProcessors = new ArrayList<>();
 		for (String ppName : orderedPostProcessorNames) {
+			//AspectJAwareAdvisorAutoProxyCreator的实例化就是在这里进行的
 			BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 			orderedPostProcessors.add(pp);
 			if (pp instanceof MergedBeanDefinitionPostProcessor) {
@@ -276,8 +280,8 @@ final class PostProcessorRegistrationDelegate {
 		// Finally, re-register all internal BeanPostProcessors.
 		//internalPostProcessors.remove(1);
 		sortPostProcessors(internalPostProcessors, beanFactory);
-
 		registerBeanPostProcessors(beanFactory, internalPostProcessors);
+
 
 		// Re-register post-processor for detecting inner beans as ApplicationListeners,
 		// moving it to the end of the processor chain (for picking up proxies etc).

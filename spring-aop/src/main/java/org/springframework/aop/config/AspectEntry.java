@@ -20,6 +20,7 @@ import org.springframework.beans.factory.parsing.ParseState;
 import org.springframework.util.StringUtils;
 
 /**
+ * 切面实体类？？
  * {@link ParseState} entry representing an aspect.
  *
  * @author Mark Fisher

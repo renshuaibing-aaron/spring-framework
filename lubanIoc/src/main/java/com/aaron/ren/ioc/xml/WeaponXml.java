@@ -1,4 +1,5 @@
-package com.aaron.ren.bean.xml;
+package com.aaron.ren.ioc.xml;
+
 
 public class WeaponXml {
 

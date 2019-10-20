@@ -7,11 +7,20 @@
       http://www.springframework.org/schema/aop
       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-	<bean id="knight" class="com.aaron.ren.bean.xml.BraveKnightXml">
+	<bean id="knight" class="com.aaron.ren.ioc.xml.BraveKnightXml">
 		<constructor-arg ref="weaponXml"/>
 	</bean>
 
-	<bean id="weaponXml" class="com.aaron.ren.bean.xml.WeaponXml">
+	<bean id="weaponXml" class="com.aaron.ren.ioc.xml.WeaponXml">
 		<property name="type" value="knife"/>
 	</bean>
+	<bean id="car" class="com.aaron.ren.ioc.beanfactoryandfactorybean.CarFactoryBean">
+
+		<property name="carInfo" value="红旗CA72,200,20000.00"/>
+
+	</bean>
+
+
+	<bean id="messageService" class="com.aaron.ren.ioc.xml.MessageServiceImpl"/>
+
 </beans>

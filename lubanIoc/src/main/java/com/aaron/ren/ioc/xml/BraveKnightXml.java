@@ -1,4 +1,4 @@
-package com.aaron.ren.bean.xml;
+package com.aaron.ren.ioc.xml;
 
 
 public class BraveKnightXml {
@@ -11,5 +11,9 @@ public class BraveKnightXml {
 
 	public WeaponXml getWeaponXml() {
 		return weaponXml;
+	}
+
+	public void setWeaponXml(WeaponXml weaponXml) {
+		this.weaponXml = weaponXml;
 	}
 }

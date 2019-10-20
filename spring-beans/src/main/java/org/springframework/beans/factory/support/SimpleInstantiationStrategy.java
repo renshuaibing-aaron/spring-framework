@@ -62,6 +62,8 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		// Don't override the class with CGLIB if no overrides.
 		//检测 bean 配置中是否配置了 lookup-method 或 replace-method
 		//如果配置了就需使用 CGLIB 构建 bean 对象
+		// 如果不存在方法覆写，那就使用 java 反射进行实例化，否则使用 CGLIB,
+		// 方法覆写 请参见附录"方法注入"中对 lookup-method 和 replaced-method 的介绍
 		if (!bd.hasMethodOverrides()) {
 			Constructor<?> constructorToUse;
 			synchronized (bd.constructorArgumentLock) {
@@ -86,10 +88,12 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			// 利用构造方法进行实例化
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {
 			// Must generate CGLIB subclass.
+			// 存在方法覆写，利用 CGLIB 来完成实例化，需要依赖于 CGLIB 生成子类，这里就不展开了
 			return instantiateWithMethodInjection(bd, beanName, owner);
 		}
 	}

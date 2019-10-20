@@ -1,4 +1,4 @@
-package com.aaron.ren.bean.annotation;
+package com.aaron.ren.ioc.annotation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
