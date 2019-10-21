@@ -31,4 +31,6 @@ rootProject.children.each {project ->
 }
 include 'lubanIoc'
 include 'spring-cglib1'
+include 'aaron-mvc'
+include 'aaron-web-mvc'
 
