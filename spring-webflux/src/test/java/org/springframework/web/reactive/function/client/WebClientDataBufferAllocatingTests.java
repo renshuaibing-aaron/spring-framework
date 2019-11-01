@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 package org.springframework.web.reactive.function.client;
 
 import java.time.Duration;
@@ -36,10 +37,12 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 
 import static org.junit.Assert.*;
 
+*/
 /**
  * WebClient integration tests focusing on data buffer management.
  * @author Rossen Stoyanchev
- */
+ *//*
+
 public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAllocatingTestCase {
 
 	private static final Duration DELAY = Duration.ofSeconds(5);
@@ -139,3 +142,4 @@ public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAlloca
 	}
 
 }
+*/

@@ -135,6 +135,7 @@ import org.springframework.web.util.WebUtils;
  * @see #setNamespace
  */
 @SuppressWarnings("serial")
+//FrameworkServlet主要创建WebApplicationContext上下文，重写了HttpServletBean的initServletBean()方法
 public abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware {
 
 	/**
@@ -496,6 +497,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			// 初始化WebApplicationContext，并调用子类（DispatcherServlet）的onRefresh(wac)方法
 			this.webApplicationContext = initWebApplicationContext();
 			initFrameworkServlet();
 		}
@@ -549,18 +551,23 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// user has performed any initialization such as setting the context id
 			wac = findWebApplicationContext();
 		}
+
+		//// 当wac既没有没被编程式注册到容器中的，也没在ServletContext找得到，此时就要新建一个Spring MVC容器
 		if (wac == null) {
 			// No context instance is defined for this servlet -> create a local one
+			//// 如果没有WebApplicationContext则创建
 			wac = createWebApplicationContext(rootContext);
 		}
 
+		// 到这里Spring MVC容器已经创建完毕，接着真正调用DispatcherServlet的初始化方法onRefresh(wac)
+		// 此处仍是模板模式的应用
 		if (!this.refreshEventReceived) {
 			// Either the context is not a ConfigurableApplicationContext with refresh
 			// support or the context injected at construction time had already been
 			// refreshed -> trigger initial onRefresh manually here.
 			onRefresh(wac);
 		}
-
+		// 将Spring MVC容器存放到ServletContext中去，方便下次取出来
 		if (this.publishContext) {
 			// Publish the context as a servlet context attribute.
 			String attrName = getServletContextAttributeName();
@@ -626,15 +633,23 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 					"': custom WebApplicationContext class [" + contextClass.getName() +
 					"] is not of type ConfigurableWebApplicationContext");
 		}
+
+		//// 实例化容器
 		ConfigurableWebApplicationContext wac =
 				(ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
 
+		// 设置容器环境
 		wac.setEnvironment(getEnvironment());
+		// 设置父容器
 		wac.setParent(parent);
+
+		// 加载Spring MVC的配置信息，如：bean注入、注解、扫描等等
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
 			wac.setConfigLocation(configLocation);
 		}
+
+		// 刷新容器，根据Spring MVC配置文件完成初始化操作
 		configureAndRefreshWebApplicationContext(wac);
 
 		return wac;

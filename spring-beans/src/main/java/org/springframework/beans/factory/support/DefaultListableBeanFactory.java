@@ -913,7 +913,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				// 将 BeanDefinition 放到这个 map 中，这个 map 保存了所有的 BeanDefinition
 				// Still in startup registration phase
 
-				System.out.println("===========将 BeanDefinition 放到这个 map 中，这个 map 保存了所有的 BeanDefinition================");
+				System.out.println("===========DefaultListableBeanFactory#registerBeanDefinition===============");
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 
 				// 这是个 ArrayList，所以会按照 bean 配置的顺序保存每一个注册的 Bean 的名字

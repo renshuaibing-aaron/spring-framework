@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package org.springframework.beans.factory
 
@@ -23,11 +24,13 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 
+*/
 /**
  * Mock object based tests for ListableBeanFactory Kotlin extensions
  *
  * @author Sebastien Deleuze
- */
+ *//*
+
 @RunWith(MockitoJUnitRunner::class)
 class ListableBeanFactoryExtensionsTests {
 
@@ -93,3 +96,4 @@ class ListableBeanFactoryExtensionsTests {
 
 	annotation class Bar
 }
+*/

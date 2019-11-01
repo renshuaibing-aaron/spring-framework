@@ -1,5 +1,6 @@
 package com.aaron.ren.bean;
 
+
 public class MyBean {
 	private int age;
 	private String name;

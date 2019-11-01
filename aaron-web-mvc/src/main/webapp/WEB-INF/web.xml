@@ -3,28 +3,43 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 	<!-- 项目名 -->
-	<display-name>example</display-name>
+	<display-name>aaronmvc</display-name>
 
-	<!--Spring配置-->
+	<!-- [1] Spring配置 -->
+	<!--配置了 org.springframework.web.context.ContextLoaderListener 对象。
+	这是一个 javax.servlet.ServletContextListener 对象，会初始化一个Root Spring WebApplicationContext 容器-->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-	<servlet>
-		<servlet-name>example</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>example</servlet-name>
-		<url-pattern>/example/</url-pattern>
-	</servlet-mapping>
-
+	<!-- 指定Spring Bean的配置文件所在目录。默认配置在WEB-INF目录下 -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring-context.xml</param-value>
 	</context-param>
+
+
+
+	<!-- [2] Spring MVC配置 -->
+	<!--配置了 org.springframework.web.servlet.DispatcherServlet 对象。
+	这是一个 javax.servlet.http.HttpServlet 对象，它除了拦截我们制定的 / 请求外，
+	也会初始化一个属于它的 Spring WebApplicationContext 容器。并且，这个容器是以 [1](上边) 处的 Root 容器作为父容器-->
+	<servlet>
+		<servlet-name>aaronmvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<!-- 可以自定义servlet.xml配置文件的位置和名称，默认为WEB-INF目录下，名称为[<servlet-name>]-servlet.xml，如aaronmvc-servlet.xml
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+          <param-value>/WEB-INF/aaronmvc-servlet.xml</param-value> // 默认
+        </init-param>
+         -->
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>aaronmvc</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
 
 	<filter>
 		<filter-name>characterEncodingFilter</filter-name>

@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package org.springframework.beans.factory.annotation
 
@@ -26,12 +27,14 @@ import org.junit.Assert.*
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.tests.sample.beans.Colour
 
+*/
 /**
  * Tests for Kotlin support with [Autowired].
  *
  * @author Juergen Hoeller
  * @author Sebastien Deleuze
- */
+ *//*
+
 class KotlinAutowiredTests {
 
 	@Test
@@ -276,3 +279,4 @@ class KotlinAutowiredTests {
 	}
 
 }
+*/
