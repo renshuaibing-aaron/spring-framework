@@ -11,3 +11,6 @@ target 目标对象 原始对象
 aop Proxy 代理对象  包含了原始对象的代码和增加后的代码的那个对象
 
 advice:通知    (位置 + logic)
+
+
+![](http://www.baidu.com/img/bdlogo.gif)  

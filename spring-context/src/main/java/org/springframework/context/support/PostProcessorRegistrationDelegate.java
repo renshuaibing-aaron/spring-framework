@@ -57,10 +57,15 @@ final class PostProcessorRegistrationDelegate {
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 
+			//此处和下面那个对比来看(这两个获取的是用户自己添加的)
+			//存放实现BeanFactoryPostProcessor的类
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
+			//存放实现BeanDefinitionRegistryPostProcessor 的类
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
-			//自定义的beanFactoryPostProcessors
+
+
+			//自定义的beanFactoryPostProcessors  这里一般为空，因为没有手动add 添加
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
@@ -78,7 +83,7 @@ final class PostProcessorRegistrationDelegate {
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
 			//这个currentRegistryProcessors 放的是spring内部自己实现了BeanDefinitionRegistryPostProcessor接口的对象
-
+			//就是AnnotatedBeanDefinitionReader 这个类里面生成的ConfigurationClassPostProcessor
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
@@ -104,6 +109,7 @@ final class PostProcessorRegistrationDelegate {
 			}
 			//排序不重要，况且currentRegistryProcessors这里也只有一个数据
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
+
 			//合并list，不重要(为什么要合并，因为还有自己的)
 			registryProcessors.addAll(currentRegistryProcessors);
 			//最重要。注意这里是方法调用
@@ -307,8 +313,10 @@ final class PostProcessorRegistrationDelegate {
 	private static void invokeBeanDefinitionRegistryPostProcessors(
 			Collection<? extends BeanDefinitionRegistryPostProcessor> postProcessors, BeanDefinitionRegistry registry) {
 
-		//因为只有一条数据
+		//因为只有一条数据  ConfigurationClassPostProcessor
 		for (BeanDefinitionRegistryPostProcessor postProcessor : postProcessors) {
+
+			//执行ConfigurationClassPostProcessor的方法
 			postProcessor.postProcessBeanDefinitionRegistry(registry);
 		}
 	}

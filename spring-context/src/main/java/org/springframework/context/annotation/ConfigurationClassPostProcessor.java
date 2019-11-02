@@ -267,11 +267,19 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		//获取容器中注册的所有bd名字
 		//7个
+		//org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+		//org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+		//org.springframework.context.annotation.internalRequiredAnnotationProcessor
+		//org.springframework.context.annotation.internalCommonAnnotationProcessor
+		//org.springframework.context.event.internalEventListenerProcessor
+		//org.springframework.context.event.internalEventListenerFactory
+		//myConfig
 		String[] candidateNames = registry.getBeanDefinitionNames();
-
+		System.out.println("----------获取容器中注册的所有bd名字--------------"+candidateNames.length);
 		/**
 		 * Full
 		 * Lite
+		 * 这里的是对上面的bean进行解析
 		 */
 		for (String beanName : candidateNames) {
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);

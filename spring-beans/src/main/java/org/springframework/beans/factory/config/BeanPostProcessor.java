@@ -78,6 +78,12 @@ import org.springframework.lang.Nullable;
  */
 public interface BeanPostProcessor {
 
+
+	/*
+	* 　这个接口允许我们自定义修改新bean的一个实例，比如说：检查它们的接口或者将他们包装成代理对象等，
+	* ApplicationContexts能自动察觉到我们在BeanProcessor里对对象作出的改变，并在后来创建该对象时应用其对应的改变。
+
+　　这两个方法分别对应IOC容器对对象初始化前的操作和对象初始化后的操作*/
 	/**
 	 * 在bean初始化之前执行
 	 * Apply this BeanPostProcessor to the given new bean instance <i>before</i> any bean

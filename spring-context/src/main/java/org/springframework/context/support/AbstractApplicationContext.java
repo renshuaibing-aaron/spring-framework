@@ -555,6 +555,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// 这个方法和上一个方法的区别在于，上一个方法是调用ApplicationContext子类的postProcessBeanFactory方法，
 				// 而这个方法是调用所有BeanFactoryPostProcessor实例的postProcessBeanFactory方法。
 				// 这个方法做了很多事情，是我们要重点分析的对象。
+				//  spring自定义的ConfigurationClassPostProcessor
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 

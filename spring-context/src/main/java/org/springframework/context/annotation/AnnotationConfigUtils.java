@@ -157,6 +157,7 @@ public class AnnotationConfigUtils {
 			}
 		}
 
+		//这里会生成几个BD(6个，其中5个都是beanpostprocessor，只有一个是beanfactorypostproceasor)
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 		//BeanDefinitio的注册，这里很重要，需要理解注册每个bean的类型
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
