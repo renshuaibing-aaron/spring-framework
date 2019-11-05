@@ -267,7 +267,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
 		//获取容器中注册的所有bd名字
 		//7个
-		//org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+		//org.springframework.context.annotation.internalConfigurationAnnotationProcessor  #BeanDefinitionRegistryPostProcessor 实现类ConfigurationClassPostProcessor
 		//org.springframework.context.annotation.internalAutowiredAnnotationProcessor
 		//org.springframework.context.annotation.internalRequiredAnnotationProcessor
 		//org.springframework.context.annotation.internalCommonAnnotationProcessor

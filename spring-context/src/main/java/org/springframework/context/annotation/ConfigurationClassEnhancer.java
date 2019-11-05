@@ -129,9 +129,13 @@ class ConfigurationClassEnhancer {
 		enhancer.setSuperclass(configSuperClass);
 		//增强接口，为什么要增强接口?
 		//便于判断，表示一个类以及被增强了
+
+		// EnhancedConfiguration extends BeanFactoryAware  利用后置处理器 进行操作
 		enhancer.setInterfaces(new Class<?>[] {EnhancedConfiguration.class});
 		//不继承Factory接口
 		enhancer.setUseFactory(false);
+
+
 		enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 		// BeanFactoryAwareGeneratorStrategy是一个生成策略
 		// 主要为生成的CGLIB类中添加成员变量$$beanFactory

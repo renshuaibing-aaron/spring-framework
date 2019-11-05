@@ -528,6 +528,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Prepare the bean factory for use in this context.
 			//准备工厂
 			// 设置 BeanFactory 的类加载器，添加几个 BeanPostProcessor，手动注册几个特殊的 bean
+			//这个方法会注册3个默认环境 bean：environment、systemProperties 和 systemEnvironment，
+			// 注册 2 个 bean 后置处理器：ApplicationContextAwareProcessor 和 ApplicationListenerDetector
 			prepareBeanFactory(beanFactory);
 
 
@@ -535,8 +537,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
 
-				//这个方法在当前版本的spring是没用任何代码的
-				//可能spring期待在后面的版本中去扩展吧
+				//这个方法在当前版本的spring是没用任何代码的 可能spring期待在后面的版本中去扩展吧
 				// 【这里需要知道 BeanFactoryPostProcessor 这个知识点，Bean 如果实现了此接口，
 				// 那么在容器初始化以后，Spring 会负责调用里面的 postProcessBeanFactory 方法。】
 
@@ -825,7 +826,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		//所谓的自定义的就是你手动调用AnnotationConfigApplicationContext.addBeanFactoryPostProcesor();
 
 
-		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
+		List<BeanFactoryPostProcessor> beanFactoryPostProcessors = getBeanFactoryPostProcessors();
+		// 这里的list为空
+		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory,beanFactoryPostProcessors);
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
 		// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
