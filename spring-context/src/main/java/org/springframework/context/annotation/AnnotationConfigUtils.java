@@ -146,6 +146,7 @@ public class AnnotationConfigUtils {
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
+
 		if (beanFactory != null) {
 			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
 				//AnnotationAwareOrderComparator主要能解析@Order注解和@Priority
@@ -159,6 +160,7 @@ public class AnnotationConfigUtils {
 
 		//这里会生成几个BD(6个，其中5个都是beanpostprocessor，只有一个是beanfactorypostproceasor)
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
+
 		//BeanDefinitio的注册，这里很重要，需要理解注册每个bean的类型
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			//需要注意的是ConfigurationClassPostProcessor的类型是BeanDefinitionRegistryPostProcessor
@@ -167,6 +169,7 @@ public class AnnotationConfigUtils {
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
+
 
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			//AutowiredAnnotationBeanPostProcessor 实现了 MergedBeanDefinitionPostProcessor

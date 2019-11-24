@@ -14,3 +14,7 @@ advice:通知    (位置 + logic)
 
 
 ![](http://www.baidu.com/img/bdlogo.gif)  
+
+
+1.  @Import注解：可以引入一个类，将这个类注入到Spring IOC容器中被当前Spring管理
+    @EnableAspectJAutoProxy注解 的作用

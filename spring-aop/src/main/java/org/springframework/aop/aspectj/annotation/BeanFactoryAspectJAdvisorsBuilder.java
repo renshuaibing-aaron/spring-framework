@@ -74,6 +74,11 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 
 
 	/**
+	 * 1.获取所有beanName
+	 *
+	 * 2.找出所有标记Aspect注解的类
+	 *
+	 * 3.对标记Aspect的类提取增强器
 	 * Look for AspectJ-annotated aspect beans in the current bean factory,
 	 * and return to a list of Spring AOP Advisors representing them.
 	 * <p>Creates a Spring Advisor for each AspectJ advice method.
@@ -81,17 +86,24 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> buildAspectJAdvisors() {
+
+		//所有Aspect类的名称集合
 		List<String> aspectNames = this.aspectBeanNames;
 
 		if (aspectNames == null) {
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
+
+				//这个双重检查是不是在学习安全的单例模式的时候见过
 				if (aspectNames == null) {
 					List<Advisor> advisors = new ArrayList<>();
 					aspectNames = new ArrayList<>();
+					//获取所有Bean名称
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
 					for (String beanName : beanNames) {
+
+						//判断是否符合条件，比如说有时会排除一些类，不让这些类注入进Spring
 						if (!isEligibleBean(beanName)) {
 							continue;
 						}
@@ -101,14 +113,17 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						if (beanType == null) {
 							continue;
 						}
+						//判断Bean的Class上是否标识@Aspect注解
 						if (this.advisorFactory.isAspect(beanType)) {
 							aspectNames.add(beanName);
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								if (this.beanFactory.isSingleton(beanName)) {
+									//将解析的Bean名称及类上的增强缓存起来,每个Bean只解析一次
 									this.advisorsCache.put(beanName, classAdvisors);
 								}
 								else {
@@ -125,6 +140,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 								MetadataAwareAspectInstanceFactory factory =
 										new PrototypeAspectInstanceFactory(this.beanFactory, beanName);
 								this.aspectFactoryCache.put(beanName, factory);
+
+								//advisorFactory.getAdvisors方法会从@Aspect标识的类上获取@Before，@Pointcut等注解的信息及其标识的方法的信息，
+								// 生成增强
 								advisors.addAll(this.advisorFactory.getAdvisors(factory));
 							}
 						}

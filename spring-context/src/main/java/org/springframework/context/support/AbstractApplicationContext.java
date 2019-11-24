@@ -536,14 +536,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
-
 				//这个方法在当前版本的spring是没用任何代码的 可能spring期待在后面的版本中去扩展吧
-				// 【这里需要知道 BeanFactoryPostProcessor 这个知识点，Bean 如果实现了此接口，
-				// 那么在容器初始化以后，Spring 会负责调用里面的 postProcessBeanFactory 方法。】
-
-				// 这里是提供给子类的扩展点，到这里的时候，所有的 Bean 都加载、注册完成了，但是都还没有初始化
-				// 具体的子类可以在这步的时候添加一些特殊的 BeanFactoryPostProcessor 的实现类或做点什么
-				//BeanFactory后置处理器回调函数，让子类有机会在创建beanFactory之后，有机会对beanFactory做额外处理。模板方法模式的使用
 				postProcessBeanFactory(beanFactory);
 
 
@@ -551,7 +544,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				//在spring的环境中去执行已经被注册的 factory processors
 				//设置执行自定义的ProcessBeanFactory 和spring内部自己定义的
 				// 调用 BeanFactoryPostProcessor 各个实现类的 postProcessBeanFactory(factory) 方法
-				// 调用BeanFactoryPostProcessor的postProcessBeanFactory方法。
 				// Spring提供了BeanFactoryPostProcessor接口，用于对BeanFactory进行扩展。如果一个Bean实现了BeanFactoryPostProcessor接口的话，在这里会调用其接口方法。
 				// 这个方法和上一个方法的区别在于，上一个方法是调用ApplicationContext子类的postProcessBeanFactory方法，
 				// 而这个方法是调用所有BeanFactoryPostProcessor实例的postProcessBeanFactory方法。

@@ -153,6 +153,19 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Set bean properties from init parameters.
+		/**
+		 * 1.加载初始化参数，如：
+		 * <servlet>
+		 *      <servlet-name>example</servlet-name>
+		 *      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		 *      <init-param>
+		 *          <param-name>name</param-name>
+		 *          <param-value>jack</param-value>
+		 *      </init-param>
+		 *      <load-on-startup>1</load-on-startup>
+		 *  </servlet>
+		 *  这里会解析init-param列表。
+		 */
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
@@ -171,6 +184,8 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Let subclasses do whatever initialization they like.
+		// 2.留给子类覆盖的模板方法
+		//FrameworkServlet 来实现
 		initServletBean();
 
 		if (logger.isDebugEnabled()) {

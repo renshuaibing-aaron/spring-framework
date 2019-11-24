@@ -1,4 +1,4 @@
-package com.aaron.ren.aop;
+package com.aaron.ren.aop.xml;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

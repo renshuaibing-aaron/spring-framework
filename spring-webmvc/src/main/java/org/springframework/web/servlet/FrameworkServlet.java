@@ -499,6 +499,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		try {
 			// 初始化WebApplicationContext，并调用子类（DispatcherServlet）的onRefresh(wac)方法
 			this.webApplicationContext = initWebApplicationContext();
+			// 空的模板方法
 			initFrameworkServlet();
 		}
 		catch (ServletException | RuntimeException ex) {
@@ -523,10 +524,13 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
+
+		// 获取rootContext，该Context就是通过ContextLoaderListener创建的XmlWebApplicationContext
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
 
+		// 如果当前webApplicationContext不为null，则为其设置父容器
 		if (this.webApplicationContext != null) {
 			// A context instance was injected at construction time -> use it
 			wac = this.webApplicationContext;
@@ -544,6 +548,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 				}
 			}
 		}
+		// 未能通过构造函数注入，则尝试去ServletContext容器中查找有无WebApplicationContext
 		if (wac == null) {
 			// No context instance was injected at construction time -> see if one
 			// has been registered in the servlet context. If one exists, it is assumed

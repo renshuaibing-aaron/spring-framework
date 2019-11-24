@@ -9,9 +9,9 @@ http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 
-	<bean id="userDao" class="com.aaron.ren.aop.UserDaoImpl"/>
+	<bean id="userDao" class="com.aaron.ren.aop.xml.UserDaoImpl"/>
 
-	<bean id="logger" class="com.aaron.ren.aop.Logger" />
+	<bean id="logger" class="com.aaron.ren.aop.xml.Logger" />
 
 	<!-- 切面：切入点和通知 -->
 	<aop:config>
@@ -23,5 +23,8 @@ http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 			<aop:after method="recordAfter" pointcut-ref="udpateUserMethod" />
 		</aop:aspect>
 	</aop:config>
+
+	<!--这个配置是不是可以隐去-->
+	<aop:aspectj-autoproxy/>
 
 </beans>

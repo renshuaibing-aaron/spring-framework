@@ -1,4 +1,4 @@
-package com.aaron.ren.ioc.annotation;
+package com.aaron.ren.ioc.importannotation;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -8,14 +8,13 @@ public class MainTest {
 		AnnotationConfigApplicationContext context1 = new AnnotationConfigApplicationContext();
 
 		//需要注册配置类
-		context1.register(MyConfig.class);
+		context1.register(HelloConfiguration.class);
 		context1.refresh(); //这里的refersh是不是没有重复？
 
 
-
-		BraveKnight knight1 = context1.getBean(BraveKnight.class);
+		HelloService bean = context1.getBean(HelloService.class);
+		bean.doSomething();
 		// knife
-		System.out.println(knight1.getWeapon().getType());
 		context1.close();
 	}
 }

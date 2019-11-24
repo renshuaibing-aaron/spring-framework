@@ -613,6 +613,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			//执行后置处理器，aop就是在这里完成的处理
 			// 还记得 init-method 吗？还有 InitializingBean 接口？还有 BeanPostProcessor 接口？
 			// 这里就是处理 bean 初始化完成后的各种回调
+			System.out.println("------------spring 由原生对象生成代理对象---------------------");
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -1195,6 +1196,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Candidate constructors for autowiring?
 		//由后置处理器决定返回哪些构造方法
 		//判断是否采用有参构造函数
+		System.out.println("=========第二次执行后置处理器==============");
+		//此处需要打debug 断点调试看看利用条件调试
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args))  {
@@ -1267,12 +1270,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected Constructor<?>[] determineConstructorsFromBeanPostProcessors(@Nullable Class<?> beanClass, String beanName)
 			throws BeansException {
 
+		//获取构造函数
+		//
 		if (beanClass != null && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
 					SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
 					Constructor<?>[] ctors = ibp.determineCandidateConstructors(beanClass, beanName);
 					if (ctors != null) {
+						System.out.println("========ctors============="+ctors);
 						return ctors;
 					}
 				}
@@ -1783,6 +1789,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			//执行后置处理的befor
 			//对该bean调用所有后置处理器的postProcessBeforeInitialization方法
 			// BeanPostProcessor 的 postProcessBeforeInitialization 回调
+			System.out.println("=====BeanPostProcessor 的 postProcessBeforeInitialization 回调===================");
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
@@ -1801,6 +1808,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			//执行后置处理器的after方法
 			// BeanPostProcessor 的 postProcessAfterInitialization 回调
 			// 代理对象的生成在这个方法中进行的
+			System.out.println("=====BeanPostProcessor 的 postProcessAfterInitialization 回调(真正生产代理对象)===================");
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 

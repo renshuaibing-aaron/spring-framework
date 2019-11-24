@@ -1673,6 +1673,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
+		//首先判断是否是 Bean 引用类型并且是否是 Factory 类型
+		//Bean引用类型指的是IOC在解析XML文件 的时候，会有 ref 属性，
+		// 而这个ref 对象还没有实例化，则暂时创建一个Bean引用类型的实例，用于在依赖注入的时候判断是否是Bean的属性类型，
+		// 如果是，则从容器中取出，如果不是，则是基本类型，就直接赋值
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
@@ -1701,6 +1705,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
+
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
 		}
 		return object;

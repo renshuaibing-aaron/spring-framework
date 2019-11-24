@@ -83,6 +83,7 @@ final class PostProcessorRegistrationDelegate {
 				}
 			}
 
+
 			// Do not initialize FactoryBeans here: We need to leave all regular beans
 			// uninitialized to let the bean factory post-processors apply to them!
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
@@ -109,7 +110,7 @@ final class PostProcessorRegistrationDelegate {
 			//ConfigurationClassPostProcessor那么这个类能干嘛呢？可以参考源码
 			//下面我们对这个牛逼哄哄的类（他能插手spring工厂的实例化过程还不牛逼吗？）重点解释
 
-			//遍历postProcessorNames
+			//遍历postProcessorNames ( 一般只有一个ConfigurationClassPostProcessor)
 			for (String ppName : postProcessorNames) {
 				//校验是否实现了PriorityOrdered接口
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
@@ -129,8 +130,8 @@ final class PostProcessorRegistrationDelegate {
 
 			//最重要。注意这里是方法调用
 			//遍历currentRegistryProcessors, 执行postProcessBeanDefinitionRegistry方法
-
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+
 			//执行完成了所有BeanDefinitionRegistryPostProcessor
 			//这个list只是一个临时变量，故而要清除
 			currentRegistryProcessors.clear();
@@ -148,6 +149,7 @@ final class PostProcessorRegistrationDelegate {
 			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
+
 
 			// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
 			boolean reiterate = true;

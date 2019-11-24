@@ -249,8 +249,10 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	@Override
 	@Nullable
 	public Object getObject() throws BeansException {
-		initializeAdvisorChain();
-		if (isSingleton()) {
+		//初始化通知器链
+		System.out.println("========初始化通知器链==============");
+		initializeAdvisorChain();// 为代理对象配置Advisor链
+		if (isSingleton()) {  //// 单例
 			return getSingletonInstance();
 		}
 		else {
@@ -258,6 +260,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 				logger.warn("Using non-singleton proxies with singleton targets is often undesirable. " +
 						"Enable prototype proxies by setting the 'targetName' property.");
 			}
+			// 非单例
 			return newPrototypeInstance();
 		}
 	}
@@ -315,6 +318,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * @return the shared singleton proxy
 	 */
 	private synchronized Object getSingletonInstance() {
+
 		if (this.singletonInstance == null) {
 			this.targetSource = freshTargetSource();
 			if (this.autodetectInterfaces && getProxiedInterfaces().length == 0 && !isProxyTargetClass()) {
