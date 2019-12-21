@@ -54,6 +54,7 @@ import java.lang.annotation.Target;
 public @interface Import {
 
 	/**
+	 * 从源码里可以看出@Import可以配合 Configuration ,ImportSelector, ImportBeanDefinitionRegistrar 来使用
 	 * {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
 	 * or regular component classes to imports.
 	 */

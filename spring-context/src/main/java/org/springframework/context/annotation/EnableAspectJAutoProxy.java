@@ -119,7 +119,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(AspectJAutoProxyRegistrar.class)
+@Import(AspectJAutoProxyRegistrar.class)    //可以引入一个类，将这个类注入到Spring IOC容器中被当前Spring管理
 public @interface EnableAspectJAutoProxy {
 
 	/**
