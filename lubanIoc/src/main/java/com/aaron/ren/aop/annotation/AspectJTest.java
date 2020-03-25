@@ -16,10 +16,36 @@ public class AspectJTest {
 		System.out.println("before testAOP...");
 	}
 
-/*	@After("testAOP()")
+
+	@After("testAOP()")
 	public void after(){
 		System.out.println("after testAOP...");
 	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 	@Around("testAOP()")
 	public Object around(ProceedingJoinPoint p){
@@ -33,4 +59,3 @@ public class AspectJTest {
 		System.out.println("around after testAOP...");
 		return o;
 	}*/
-}

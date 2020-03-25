@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.aop.framework.autoproxy;
 
 import org.springframework.beans.factory.BeanNameAware;
@@ -25,7 +9,7 @@ import org.springframework.lang.Nullable;
  * completely generic; it contains no special code to handle any particular aspects,
  * such as pooling aspects.
  *
- * <p>It's possible to filter out advisors - for example, to use multiple post processors
+ * <p>It's possible to bean out advisors - for example, to use multiple post processors
  * of this type in the same factory - by setting the {@code usePrefix} property to true,
  * in which case only advisors beginning with the DefaultAdvisorAutoProxyCreator's bean
  * name followed by a dot (like "aapc.") will be used. This default prefix can be changed
@@ -34,6 +18,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Rod Johnson
  * @author Rob Harrop
+ * DefaultAdvisorAutoProxyCreator 最后居然是一个 BeanPostProcessor，
+ * 在 Spring IOC 源码分析的时候说过，BeanPostProcessor 的两个方法，分别在 init-method 的前后得到执行
  */
 @SuppressWarnings("serial")
 public class DefaultAdvisorAutoProxyCreator extends AbstractAdvisorAutoProxyCreator implements BeanNameAware {

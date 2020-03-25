@@ -141,13 +141,12 @@ public class BeanDefinitionReaderUtils {
 	 * @param registry the bean factory to register with
 	 * @throws BeanDefinitionStoreException if registration failed
 	 */
-	public static void registerBeanDefinition(
-			BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
+	public static void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
 			throws BeanDefinitionStoreException {
 
+		System.out.println("=========【注册解析的 BeanDefinitions】=========");
 		// Register bean definition under primary name.
 		String beanName = definitionHolder.getBeanName();
-
 		// 注册这个 Bean
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 

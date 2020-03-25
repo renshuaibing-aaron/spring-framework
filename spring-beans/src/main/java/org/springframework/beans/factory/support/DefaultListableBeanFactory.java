@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.beans.factory.support;
 
 import java.io.IOException;
@@ -354,6 +338,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		//一个简单的bean和名字的容器
 		//通过resolveNamedBean方法得到这个holder，故而需要看这个resolveNamedBean方法如何得到这个holder的
 		NamedBeanHolder<T> namedBean = resolveNamedBean(requiredType, args);
+
 		if (namedBean != null) {
 			return namedBean.getBeanInstance();
 		}
@@ -1086,6 +1071,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		if (candidateNames.length == 1) {
 			String beanName = candidateNames[0];
 			//这的getBean才是真正获取对象的方法
+			System.out.println("**********这的getBean才是真正获取对象的方法************");
 			return new NamedBeanHolder<>(beanName, getBean(beanName, requiredType, args));
 		}
 		else if (candidateNames.length > 1) {

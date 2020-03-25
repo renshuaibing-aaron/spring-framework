@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web.context;
 
 import java.io.IOException;
@@ -258,6 +242,7 @@ public class ContextLoader {
 	 * @see #CONFIG_LOCATION_PARAM
 	 */
 	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
+		System.out.println("===========【初始化 root WebApplicationContext 对象】============");
 		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
 			throw new IllegalStateException(
 					"Cannot initialize context because there is already a root application context present - " +
@@ -277,6 +262,7 @@ public class ContextLoader {
 			// it is available on ServletContext shutdown.
 			if (this.context == null) {
 				// 1.创建web应用上下文环境
+				System.out.println("===========【创建 root WebApplicationContext 对象】===============");
 				this.context = createWebApplicationContext(servletContext);
 			}
 			if (this.context instanceof ConfigurableWebApplicationContext) {
@@ -457,6 +443,7 @@ public class ContextLoader {
 		// 4.自定义配置上下文环境
 		customizeContext(sc, wac);
 		// 5.刷新上下文环境
+		System.out.println("===========【容器刷新方法】=================");
 		wac.refresh();
 	}
 

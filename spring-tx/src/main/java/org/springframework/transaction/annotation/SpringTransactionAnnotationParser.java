@@ -45,6 +45,7 @@ public class SpringTransactionAnnotationParser implements TransactionAnnotationP
 		AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(
 				element, Transactional.class, false, false);
 		if (attributes != null) {
+			System.out.println("====spring 事务解析注解类Transactional==============================");
 			return parseTransactionAnnotation(attributes);
 		}
 		else {

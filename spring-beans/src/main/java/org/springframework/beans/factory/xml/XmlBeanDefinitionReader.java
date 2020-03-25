@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.beans.factory.xml;
 
 import java.io.IOException;
@@ -301,6 +285,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 */
 	@Override
 	public int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException {
+		System.out.println("=========【IoC 之加载 BeanDefinition】============");
 		return loadBeanDefinitions(new EncodedResource(resource));
 	}
 
@@ -333,6 +318,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());
 				}
+				//真正的加载
 				return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 			}
 			finally {
@@ -388,7 +374,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 		try {
+			// <1> 获取 XML Document 实例
 			Document doc = doLoadDocument(inputSource, resource);
+			// <2> 根据 Document 实例，注册 Bean 信息
 			return registerBeanDefinitions(doc, resource);
 		}
 		catch (BeanDefinitionStoreException ex) {
@@ -426,8 +414,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see DocumentLoader#loadDocument
 	 */
 	protected Document doLoadDocument(InputSource inputSource, Resource resource) throws Exception {
-		return this.documentLoader.loadDocument(inputSource, getEntityResolver(), this.errorHandler,
-				getValidationModeForResource(resource), isNamespaceAware());
+		System.out.println("========【IoC 之获取 Document 对象】===========");
+		//IoC 之获取验证模型   这个方法 就是验证xml文件的合法性
+		int validationModeForResource = getValidationModeForResource(resource);
+		return this.documentLoader.loadDocument(inputSource, getEntityResolver(), this.errorHandler,validationModeForResource
+			, isNamespaceAware());
 	}
 
 	/**
@@ -503,9 +494,16 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+		System.out.println("========【 IoC 之注册 BeanDefinitions】XmlBeanDefinitionReader#registerBeanDefinitions===========");
+		// <1> 创建 BeanDefinitionDocumentReader 对象
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+		// <2> 获取已注册的 BeanDefinition 数量
 		int countBefore = getRegistry().getBeanDefinitionCount();
-		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
+		// <3> 创建 XmlReaderContext 对象
+		XmlReaderContext readerContext = createReaderContext(resource);
+		// <4> 注册 BeanDefinition
+		documentReader.registerBeanDefinitions(doc,readerContext );
+		// 计算新注册的 BeanDefinition 数量
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
 

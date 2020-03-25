@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.transaction.support;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -31,6 +15,7 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.util.Assert;
 
 /**
+ * 编程式事务的实现
  * Template class that simplifies programmatic transaction demarcation and
  * transaction exception handling.
  *
@@ -129,18 +114,22 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 	@Nullable
 	public <T> T execute(TransactionCallback<T> action) throws TransactionException {
 		Assert.state(this.transactionManager != null, "No PlatformTransactionManager set");
-
+       // 内部封装好的事务管理器
 		if (this.transactionManager instanceof CallbackPreferringPlatformTransactionManager) {
 			return ((CallbackPreferringPlatformTransactionManager) this.transactionManager).execute(this, action);
 		}
+		// 需要手动获取事务，执行方法，提交事务的管理器
 		else {
+			// 1.获取事务状态
 			TransactionStatus status = this.transactionManager.getTransaction(this);
 			T result;
 			try {
+				// 2.执行业务逻辑
 				result = action.doInTransaction(status);
 			}
 			catch (RuntimeException | Error ex) {
 				// Transactional code threw application exception -> rollback
+				// 应用运行时异常 -> 回滚
 				rollbackOnException(status, ex);
 				throw ex;
 			}
@@ -149,6 +138,7 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 				rollbackOnException(status, ex);
 				throw new UndeclaredThrowableException(ex, "TransactionCallback threw undeclared checked exception");
 			}
+			// 3.事务提交
 			this.transactionManager.commit(status);
 			return result;
 		}

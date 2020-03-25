@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.aop.framework;
 
 import java.io.Serializable;
@@ -80,6 +64,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 	private static final Log logger = LogFactory.getLog(JdkDynamicAopProxy.class);
 
 	/** Config used to configure this proxy */
+	//重要的配置  配置代理使用的
 	private final AdvisedSupport advised;
 
 	/**
@@ -178,6 +163,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 				// The target does not implement the hashCode() method itself.
 				return hashCode();
 			}
+
 			else if (method.getDeclaringClass() == DecoratingProxy.class) {
 				// There is only getDecoratedClass() declared -> dispatch to proxy config.
 				return AopProxyUtils.ultimateTargetClass(this.advised);
@@ -190,6 +176,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 			Object retVal;
 
+			// 如果设置了 exposeProxy，那么将 proxy 放到 ThreadLocal 中
 			if (this.advised.exposeProxy) {
 				// Make invocation available if necessary.
 				oldProxy = AopContext.setCurrentProxy(proxy);
@@ -204,7 +191,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			Class<?> targetClass = (target != null ? target.getClass() : null);
 
 
-			// 获取拦截器链
+			// 获取拦截器链// 创建一个 chain，包含所有要执行的 advice
 			// Get the interception chain for this method.
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 

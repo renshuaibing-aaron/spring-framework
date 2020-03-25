@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.aop.framework.adapter;
 
 import java.io.Serializable;
@@ -47,6 +31,8 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 	 * Create a new DefaultAdvisorAdapterRegistry, registering well-known adapters.
 	 */
 	public DefaultAdvisorAdapterRegistry() {
+
+		//三个适配器
 		registerAdvisorAdapter(new MethodBeforeAdviceAdapter());
 		registerAdvisorAdapter(new AfterReturningAdviceAdapter());
 		registerAdvisorAdapter(new ThrowsAdviceAdapter());
@@ -75,13 +61,26 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 		throw new UnknownAdviceTypeException(advice);
 	}
 
+	/**
+	 * 目标Bean中并不是所有的方法都需要增强，所以我们要遍历所有的 Advisor ，
+	 * 根据Pointcut判断增强器是否能匹配当前类中的method，取出能匹配的增强器，封装成 MethodInterceptor，加入到拦截器链中
+	 * @param advisor Advisor to find an interceptor for
+	 * @return
+	 * @throws UnknownAdviceTypeException
+	 */
 	@Override
 	public MethodInterceptor[] getInterceptors(Advisor advisor) throws UnknownAdviceTypeException {
+
 		List<MethodInterceptor> interceptors = new ArrayList<>(3);
 		Advice advice = advisor.getAdvice();
+
+		System.out.println("====adviceadviceadvice================"+advice);
 		if (advice instanceof MethodInterceptor) {
 			interceptors.add((MethodInterceptor) advice);
 		}
+
+		//这里遍历三个适配器，将对应的advisor转化成Interceptor
+		//这三个适配器分别是MethodBeforeAdviceAdapter，AfterReturningAdviceAdapter，ThrowsAdviceAdapter
 		for (AdvisorAdapter adapter : this.adapters) {
 			if (adapter.supportsAdvice(advice)) {
 				interceptors.add(adapter.getInterceptor(advisor));

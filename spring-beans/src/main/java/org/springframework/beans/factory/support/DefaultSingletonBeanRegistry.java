@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.beans.factory.support;
 
 import java.util.Collections;
@@ -75,10 +59,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/** Cache of singleton factories: bean name --> ObjectFactory */
-	//存放 bean工厂对象解决循环依赖
+	//存放 bean工厂对象解决循环依赖 创建单例bean的工厂
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	//存放原始的bean对象用于解决循环依赖,注意：存到里面的对象还没有被填充属性
+	//todo 存放早期的bean 这个map也是解决循环依赖的关键所在
 	/** Cache of early singleton objects: bean name --> bean instance */
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
@@ -178,11 +163,13 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 		//从map中获取bean如果不为空直接返回，不再进行初始化工作
-		//讲道理一个程序员提供的对象这里一般都是为空的
 		Object singletonObject = this.singletonObjects.get(beanName);
+
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
+
 				singletonObject = this.earlySingletonObjects.get(beanName);
+
 				if (singletonObject == null && allowEarlyReference) {
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -181,11 +182,18 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				Node node = nl.item(i);
 				if (node instanceof Element) {
 					Element ele = (Element) node;
+					System.out.println(ele);
 					if (delegate.isDefaultNamespace(ele)) {
+						System.out.println("============【解析默认xml标签文件】=================");
+						// 解析 default namespace 下面的几个元素
+						//parseDefaultElement(ele, delegate) 代表解析的节点是 <import />、<alias />、<bean />、<beans /> 这几个
+
 						parseDefaultElement(ele, delegate);
 					}
 					else {
+						System.out.println("============【解析自定义xml标签文件】=================");
 						//对<aop:config>的定义在这里处理，因为它的命名空间是 http://www.springframework.org/schema/aop 进入该方法
+						//<mvc />、<task />、<context />、<aop />等
 						System.out.println(ele);
 						delegate.parseCustomElement(ele);
 					}
@@ -195,6 +203,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		else {
 			delegate.parseCustomElement(root);
 		}
+
 	}
 
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
@@ -218,6 +227,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * from the given resource into the bean factory.
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
+		System.out.println("==========【IoC 之解析Bean：解析 import 标签】==================");
 		String location = ele.getAttribute(RESOURCE_ATTRIBUTE);
 		if (!StringUtils.hasText(location)) {
 			getReaderContext().error("Resource location must not be empty", ele);
@@ -314,14 +324,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * and registering it with the registry.
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
-
+		System.out.println("============IoC 之解析 <bean> 标签================");
 		// 将 <bean /> 节点转换为 BeanDefinitionHolder，就是上面说的一堆
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 
 
 		if (bdHolder != null) {
 
-			// 如果有自定义属性的话，进行相应的解析，先忽略
+			// 如果有自定义属性的话，进行相应的解析
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.

@@ -28,6 +28,7 @@
 		<servlet-name>aaronmvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
+		<!-- 这个配置文件可以看出肯定是又一个容器的加载 要不然 写这个xml文件干嘛？？-->
 		<!-- 可以自定义servlet.xml配置文件的位置和名称，默认为WEB-INF目录下，名称为[<servlet-name>]-servlet.xml，如aaronmvc-servlet.xml
         <init-param>
             <param-name>contextConfigLocation</param-name>
@@ -56,6 +57,8 @@
 	<filter-mapping>
 		<filter-name>characterEncodingFilter</filter-name>
 		<url-pattern>/</url-pattern>
+		
 	</filter-mapping>
+
 
 </web-app>

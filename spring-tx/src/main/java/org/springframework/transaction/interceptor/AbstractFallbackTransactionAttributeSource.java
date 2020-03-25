@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.transaction.interceptor;
 
 import java.lang.reflect.Method;
@@ -90,6 +74,8 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	@Override
 	@Nullable
 	public TransactionAttribute getTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
+
+		System.out.println("=======判断我们的业务方法或者类上是否有@Transactional注解======");
 		if (method.getDeclaringClass() == Object.class) {
 			return null;
 		}
@@ -109,6 +95,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		}
 		else {
 			// We need to work it out.
+			//获取事务属性
 			TransactionAttribute txAttr = computeTransactionAttribute(method, targetClass);
 			// Put it in the cache.
 			if (txAttr == null) {
@@ -122,6 +109,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 				if (logger.isDebugEnabled()) {
 					logger.debug("Adding transactional method '" + methodIdentification + "' with attribute: " + txAttr);
 				}
+				//将解析好的事务存入缓存
 				this.attributeCache.put(cacheKey, txAttr);
 			}
 			return txAttr;
@@ -159,12 +147,14 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
 
 		// First try is the method in the target class.
+		//查看方法中是否有事务声明
 		TransactionAttribute txAttr = findTransactionAttribute(specificMethod);
 		if (txAttr != null) {
 			return txAttr;
 		}
 
 		// Second try is the transaction attribute on the target class.
+		//查看方法的类中是否有事务声明
 		txAttr = findTransactionAttribute(specificMethod.getDeclaringClass());
 		if (txAttr != null && ClassUtils.isUserLevelMethod(method)) {
 			return txAttr;
@@ -172,6 +162,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 
 		if (specificMethod != method) {
 			// Fallback is to look at the original method.
+			//接口
 			txAttr = findTransactionAttribute(method);
 			if (txAttr != null) {
 				return txAttr;

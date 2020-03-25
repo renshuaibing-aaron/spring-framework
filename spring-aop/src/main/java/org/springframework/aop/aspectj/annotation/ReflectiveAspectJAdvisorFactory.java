@@ -110,6 +110,12 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 	}
 
 
+	/**
+	 * advisorFactory.getAdvisors方法会从@Aspect标识的类上获取@Before，@Pointcut等注解的信息及其标识的方法的信息，生成增强
+	 * @param aspectInstanceFactory the aspect instance factory
+	 * (not the aspect instance itself in order to avoid eager instantiation)
+	 * @return
+	 */
 	@Override
 	public List<Advisor> getAdvisors(MetadataAwareAspectInstanceFactory aspectInstanceFactory) {
 		Class<?> aspectClass = aspectInstanceFactory.getAspectMetadata().getAspectClass();
@@ -125,7 +131,11 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 
 		List<Advisor> advisors = new ArrayList<>();
 		//获取这个类所有的增强方法
-		for (Method method : getAdvisorMethods(aspectClass)) {
+		// 对aspectClass的每一个带有注解的方法进行循环（带有PointCut注解的方法除外），取得Advisor，并添加到集合里。
+		// (这是里应该是取得Advice，然后取得我们自己定义的切面类中PointCut，组合成Advisor)
+		List<Method> advisorMethods = getAdvisorMethods(aspectClass);
+
+		for (Method method : advisorMethods) {
 
 			//生成增强实例
 			Advisor advisor = getAdvisor(method, lazySingletonAspectInstanceFactory, advisors.size(), aspectName);
@@ -194,6 +204,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 	}
 
 
+	//调用生成增强实例的方法
 	@Override
 	@Nullable
 	public Advisor getAdvisor(Method candidateAdviceMethod, MetadataAwareAspectInstanceFactory aspectInstanceFactory,

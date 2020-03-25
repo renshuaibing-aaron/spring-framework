@@ -33,4 +33,6 @@ include 'lubanIoc'
 include 'spring-cglib1'
 include 'aaron-mvc'
 include 'aaron-web-mvc'
+include 'aaron-web-servlet'
+include 'aaron-web-servlet3'
 

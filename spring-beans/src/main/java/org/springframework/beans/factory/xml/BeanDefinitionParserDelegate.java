@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.beans.factory.xml;
 
 import java.util.ArrayList;
@@ -590,7 +574,7 @@ public class BeanDefinitionParserDelegate {
 	 * @return a bean definition initialized according to the bean element attributes
 	 */
 	public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
-			@Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
+																@Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
 
 		if (ele.hasAttribute(SINGLETON_ATTRIBUTE)) {
 			error("Old 1.x 'singleton' attribute in use - upgrade to 'scope' declaration", ele);
@@ -1272,7 +1256,7 @@ public class BeanDefinitionParserDelegate {
 						"'value' attribute OR 'value-ref' attribute OR <value> sub-element", entryEle);
 			}
 			if ((hasValueTypeAttribute && hasValueRefAttribute) ||
-				(hasValueTypeAttribute && !hasValueAttribute) ||
+					(hasValueTypeAttribute && !hasValueAttribute) ||
 					(hasValueTypeAttribute && valueEle != null)) {
 				error("<entry> element is only allowed to contain a 'value-type' " +
 						"attribute when it has a 'value' attribute", entryEle);

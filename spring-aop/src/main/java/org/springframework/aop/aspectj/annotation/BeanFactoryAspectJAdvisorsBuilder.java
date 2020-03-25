@@ -74,11 +74,10 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 
 
 	/**
-	 * 1.获取所有beanName
-	 *
-	 * 2.找出所有标记Aspect注解的类
-	 *
-	 * 3.对标记Aspect的类提取增强器
+	 （1）获取所有beanName，这一步骤中所有在beanFactory中注册的Bean都会被提取出来。
+	 （2）遍历所有beanName，并找出声明AspectJ注解的类，进行进一步的处理。
+	 （3）对标记为AspectJ注解的类进行增强器的提取。
+	 （4）将提取结果加入缓存。
 	 * Look for AspectJ-annotated aspect beans in the current bean factory,
 	 * and return to a list of Spring AOP Advisors representing them.
 	 * <p>Creates a Spring Advisor for each AspectJ advice method.
@@ -98,9 +97,12 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 				if (aspectNames == null) {
 					List<Advisor> advisors = new ArrayList<>();
 					aspectNames = new ArrayList<>();
-					//获取所有Bean名称
+
+					// 获取所有的beanName
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
+
+					// 循环所有的beanName找出对应的增强方法
 					for (String beanName : beanNames) {
 
 						//判断是否符合条件，比如说有时会排除一些类，不让这些类注入进Spring
@@ -109,6 +111,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						}
 						// We must be careful not to instantiate beans eagerly as in this case they
 						// would be cached by the Spring container but would not have been weaved.
+						// 获取对应的bean的Class类型
 						Class<?> beanType = this.beanFactory.getType(beanName);
 						if (beanType == null) {
 							continue;
@@ -121,6 +124,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
 
+								// 解析标记Aspect注解中的增强方法
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								if (this.beanFactory.isSingleton(beanName)) {
 									//将解析的Bean名称及类上的增强缓存起来,每个Bean只解析一次

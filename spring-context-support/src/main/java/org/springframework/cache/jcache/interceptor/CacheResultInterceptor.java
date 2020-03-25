@@ -88,11 +88,11 @@ class CacheResultInterceptor extends AbstractKeyCacheInterceptor<CacheResultOper
 		}
 	}
 
-	protected void cacheException(@Nullable Cache exceptionCache, ExceptionTypeFilter filter, Object cacheKey, Throwable ex) {
+	protected void cacheException(@Nullable Cache exceptionCache, ExceptionTypeFilter bean, Object cacheKey, Throwable ex) {
 		if (exceptionCache == null) {
 			return;
 		}
-		if (filter.match(ex.getClass())) {
+		if (bean.match(ex.getClass())) {
 			doPut(exceptionCache, cacheKey, ex);
 		}
 	}

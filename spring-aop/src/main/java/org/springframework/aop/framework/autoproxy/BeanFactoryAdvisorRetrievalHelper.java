@@ -65,6 +65,9 @@ public class BeanFactoryAdvisorRetrievalHelper {
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> findAdvisorBeans() {
+		System.out.println("=========找出所有对应Advisor的类的beanName，再通过beanFactory.getBean方法获取这些bean并返回========================");
+		//这里会找到BeanFactoryTransactionAttributeSourceAdvisor
+
 		// Determine list of advisor bean names, if not cached already.
 		String[] advisorNames = this.cachedAdvisorBeanNames;
 		if (advisorNames == null) {

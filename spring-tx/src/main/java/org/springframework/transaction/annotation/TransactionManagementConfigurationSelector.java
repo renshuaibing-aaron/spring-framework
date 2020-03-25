@@ -42,6 +42,11 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	 */
 	@Override
 	protected String[] selectImports(AdviceMode adviceMode) {
+
+		/**
+		 * 可以看到这里是根据@EnableTransactionManagement注解的mode属性来确认注入哪一个配置类。这里由于我们没有指定属性，所以使用的默认的PROXY代理，走的是第一个分枝
+		 * 所以在这里往Spring容器中注入了两个beanAutoProxyRegistrar、ProxyTransactionManagementConfiguration
+		 */
 		switch (adviceMode) {
 			case PROXY:
 				return new String[] {AutoProxyRegistrar.class.getName(),

@@ -495,7 +495,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * refresh其实是在AbstractApplicationContext类中实现的。
 	 * AbstractApplicationContext实现了BeanDefinitionRegistry以及BeanFactory的大部分功能，
 	 * 所以其子类如AnnotationConfigApplicationContext或ClassPathXmlApplicationContext只需要实现部分相关功能(如加载resource)即可。
 	 * @throws BeansException
@@ -503,20 +502,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
+		System.out.println("========【refresh方法】===========");
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
 			////准备工作包括设置启动时间，是否激活标识位，
 			// 初始化属性源(property source)配置
-			// 准备工作，记录下容器的启动时间、标记“已启动”状态、处理配置文件中的占位符
 			prepareRefresh();
 
 
 			// Tell the subclass to refresh the internal bean factory.
 			//注意，这个方法是全文最重要的部分之一，这里将会初始化 BeanFactory、加载 Bean、注册 Bean 等等
-			//当然，这步结束后，Bean 并没有完成初始化。
-			//返回一个factory 为什么需要返回一个工厂
-			//因为要对工厂进行初始化
-			// 这步比较关键，这步完成后，配置文件就会解析成一个个 Bean 定义，注册到 BeanFactory 中，
 			// 当然，这里说的 Bean 还没有初始化，只是配置信息都提取出来了，
 			// 注册也只是将这些信息都保存到了注册中心(说到底核心是一个 beanName-> beanDefinition 的 map)
 			//获取beanFactory，对于AnnotationConfigApplicationContext而言，
@@ -526,7 +521,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 
 			// Prepare the bean factory for use in this context.
-			//准备工厂
 			// 设置 BeanFactory 的类加载器，添加几个 BeanPostProcessor，手动注册几个特殊的 bean
 			//这个方法会注册3个默认环境 bean：environment、systemProperties 和 systemEnvironment，
 			// 注册 2 个 bean 后置处理器：ApplicationContextAwareProcessor 和 ApplicationListenerDetector
@@ -547,7 +541,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Spring提供了BeanFactoryPostProcessor接口，用于对BeanFactory进行扩展。如果一个Bean实现了BeanFactoryPostProcessor接口的话，在这里会调用其接口方法。
 				// 这个方法和上一个方法的区别在于，上一个方法是调用ApplicationContext子类的postProcessBeanFactory方法，
 				// 而这个方法是调用所有BeanFactoryPostProcessor实例的postProcessBeanFactory方法。
-				// 这个方法做了很多事情，是我们要重点分析的对象。
 				//  spring自定义的ConfigurationClassPostProcessor
 				invokeBeanFactoryPostProcessors(beanFactory);
 
@@ -568,13 +561,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 
 				// Initialize message source for this context.
-				// 初始化当前 ApplicationContext 的 MessageSource，国际化这里就不展开说了，不然没完没了了
+				// 初始化当前 ApplicationContext 的 MessageSource
 				initMessageSource();
 
 
 
 				// Initialize event multicaster for this context.
-				//初始化应用事件广播器
 				// 初始化当前 ApplicationContext 的事件广播器，这里也不展开了
 				initApplicationEventMulticaster();
 
@@ -605,9 +597,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				//剩下的就是初始化其他还没被初始化的 singleton beans 了，
 				// 我们知道它们是单例的，如果没有设置懒加载，那么 Spring 会在接下来初始化所有的 singleton beans。
 				// Instantiate all remaining (non-lazy-init) singletons.
-				// 重点，重点，重点
 				// 初始化所有的 singleton beans,并执行与Spring Bean生命周期相关的方法。如init-method，*aware接口方法等
 				//（lazy-init 的除外）
+				System.out.println("========【初始化所有的 singleton beans】=（lazy-init 的除外）本质是进入Bean加载阶段的入口==========");
 				finishBeanFactoryInitialization(beanFactory);
 
 
@@ -638,6 +630,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// might not ever need metadata for singleton beans anymore...
 				resetCommonCaches();
 			}
+			System.out.println("========【refresh结束】===========");
 		}
 	}
 
@@ -974,11 +967,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Initialize conversion service for this context.
 		//首先，初始化名字为 conversionService 的 Bean
-		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
-				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
-			beanFactory.setConversionService(
-					//初始化的动作包装在 beanFactory.getBean(...) 中
-					beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
+		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
+
+			//初始化的动作包装在 beanFactory.getBean(...) 中
+			ConversionService bean = beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class);
+			beanFactory.setConversionService(bean);
 		}
 
 		// Register a default embedded value resolver if no bean post-processor
@@ -1242,7 +1235,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		assertBeanFactoryActive();
 		return getBeanFactory().getBean(name, args);
 	}
-
 	@Override
 	public <T> T getBean(Class<T> requiredType) throws BeansException {
 		//assertBeanFactoryActive();

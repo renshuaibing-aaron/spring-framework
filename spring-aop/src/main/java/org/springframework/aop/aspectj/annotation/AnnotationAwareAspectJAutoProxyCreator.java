@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.aop.aspectj.annotation;
 
 import java.util.ArrayList;
@@ -29,6 +13,10 @@ import org.springframework.util.Assert;
 
 /**
  * 主要功能就是根据@Point注解定义的切点来自动代理与表达式匹配的类。
+ * 而AOP的整体逻辑就是通过这两个方法来实现的
+ * postProcessBeforeInstantiation
+ * 首先看一下这个postProcessBeforeInstantiation方法，它是在bean实例化之前调用的，主要是针对切面类。
+ * 这个方法不在AnnotationAwareAspectJAutoProxyCreator这个类中，而是在其父类AbstractAutoProxyCreator中
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
  *
@@ -41,7 +29,7 @@ import org.springframework.util.Assert;
  *
  * <p>Processing of Spring Advisors follows the rules established in
  * {@link org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator}.
- *
+ *AnnotationAwareAspectJAutoProxyCreator这个类间接实现了BeanPostProcessor接口
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @since 2.0
@@ -89,14 +77,19 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 
 	@Override
 	protected List<Advisor> findCandidateAdvisors() {
+
 		// Add all the Spring advisors found according to superclass rules.
-		//调用父类的方法加载配置文件中的AOP声明（注解与XML都存在的时候）
+		//调用父类的方法加载配置文件中的AOP声明（注解与XML都存在的时候） 当使用注解方式配置AOP的时候并不是丢弃了对XML配置的支持，
 		List<Advisor> advisors = super.findCandidateAdvisors();
+
 		// Build Advisors for all AspectJ aspects in the bean factory.
 		if (this.aspectJAdvisorsBuilder != null) {
 
-			//buildAspectJAdvisors是重点
-			advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
+			//buildAspectJAdvisors是重点  获取Bean的注解增强的功能
+			List<Advisor> advisors1 = this.aspectJAdvisorsBuilder.buildAspectJAdvisors();
+			//这里获取一个InstantiationModelAwarePointcutAdvisorImpl的实例
+			System.out.println("================="+advisors1);
+			advisors.addAll(advisors1);
 		}
 		return advisors;
 	}
