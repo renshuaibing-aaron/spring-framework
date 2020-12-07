@@ -17,3 +17,9 @@ spring mvc的特殊的dispatchServlet 也是个servlet  也是被tomcat进行控
  
  现在springboot  直接使用自动配置减少了 xml的配置
   这里面的过程需要了解(利用到了servlet3的特性)
+  
+  
+  
+3.spring mvc 两个容器
+Root WebApplicationContext  ContextLoaderListener过程中初始化
+Servlet WebApplicationContext dispatchservlet过程中初始化

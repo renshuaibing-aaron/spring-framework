@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web.servlet.handler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +11,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ * 实现 HandlerInterceptor 接口，支持地址匹配的 HandlerInterceptor 实现类
  * Contains and delegates calls to a {@link HandlerInterceptor} along with
  * include (and optionally exclude) path patterns to which the interceptor should apply.
  * Also provides matching logic to test if the interceptor applies to a given request path.
@@ -43,15 +28,23 @@ import org.springframework.web.servlet.ModelAndView;
  * @since 3.0
  */
 public final class MappedInterceptor implements HandlerInterceptor {
-
+	/**
+	 * 匹配的路径
+	 */
 	@Nullable
 	private final String[] includePatterns;
-
+	/**
+	 * 不匹配的路径
+	 */
 	@Nullable
 	private final String[] excludePatterns;
-
+	/**
+	 * HandlerInterceptor 拦截器对象
+	 */
 	private final HandlerInterceptor interceptor;
-
+	/**
+	 * 路径匹配器
+	 */
 	@Nullable
 	private PathMatcher pathMatcher;
 
@@ -138,6 +131,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 
 
 	/**
+	 * 判断路径是否匹配
 	 * Determine a match for the given lookup path.
 	 * @param lookupPath the current request path
 	 * @param pathMatcher a path matcher for path pattern matching
@@ -145,6 +139,8 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	 */
 	public boolean matches(String lookupPath, PathMatcher pathMatcher) {
 		PathMatcher pathMatcherToUse = (this.pathMatcher != null ? this.pathMatcher : pathMatcher);
+
+		// 先排重
 		if (!ObjectUtils.isEmpty(this.excludePatterns)) {
 			for (String pattern : this.excludePatterns) {
 				if (pathMatcherToUse.match(pattern, lookupPath)) {
@@ -152,11 +148,13 @@ public final class MappedInterceptor implements HandlerInterceptor {
 				}
 			}
 		}
+		// 特殊，如果包含为空，则默认就是包含
 		if (ObjectUtils.isEmpty(this.includePatterns)) {
 			return true;
 		}
+		// 后包含
 		for (String pattern : this.includePatterns) {
-			if (pathMatcherToUse.match(pattern, lookupPath)) {
+			if (pathMatcherToUse.match(pattern, lookupPath)) {// 匹配
 				return true;
 			}
 		}

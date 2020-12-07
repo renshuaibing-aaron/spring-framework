@@ -2,6 +2,8 @@ package com.aaron.ren.transaction.aop.type4;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
 
 public class TransactionApp {
 

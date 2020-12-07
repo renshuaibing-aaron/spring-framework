@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web.servlet.mvc.method.annotation;
 
 import java.lang.reflect.Method;
@@ -170,6 +154,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 	private int cacheSecondsForSessionAttributeHandlers = 0;
 
+	//是否对相同 Session 加锁
 	private boolean synchronizeOnSession = false;
 
 	private SessionAttributeStore sessionAttributeStore = new DefaultSessionAttributeStore();
@@ -192,6 +177,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 
 	public RequestMappingHandlerAdapter() {
+
+		// 初始化 messageConverters
 		StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
 		stringHttpMessageConverter.setWriteAcceptCharset(false);  // see SPR-7316
 
@@ -564,16 +551,20 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	@Override
 	public void afterPropertiesSet() {
 		// Do this first, it may add ResponseBody advice beans
+		// <1> 初始化 ControllerAdvice 相关
 		initControllerAdviceCache();
 
+		// <2> 初始化 argumentResolvers 属性
 		if (this.argumentResolvers == null) {
 			List<HandlerMethodArgumentResolver> resolvers = getDefaultArgumentResolvers();
 			this.argumentResolvers = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
 		}
+		// <3> 初始化 initBinderArgumentResolvers 属性
 		if (this.initBinderArgumentResolvers == null) {
 			List<HandlerMethodArgumentResolver> resolvers = getDefaultInitBinderArgumentResolvers();
 			this.initBinderArgumentResolvers = new HandlerMethodArgumentResolverComposite().addResolvers(resolvers);
 		}
+		// <4> 初始化 returnValueHandlers 属性
 		if (this.returnValueHandlers == null) {
 			List<HandlerMethodReturnValueHandler> handlers = getDefaultReturnValueHandlers();
 			this.returnValueHandlers = new HandlerMethodReturnValueHandlerComposite().addHandlers(handlers);

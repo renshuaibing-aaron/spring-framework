@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+
+	<bean id="userDao" class="com.aaron.ren.aop.aopproblem.UserDaoImpl" autowire="byType" lazy-init="true" >
+		<property name="userDao" ref="userDao"/>
+</bean>
+
+
+
+	<bean id="logger" class="com.aaron.ren.aop.aopproblem.Logger"  lazy-init="true"/>
+
+	<!-- 切面：切入点和通知 -->
+	<aop:config>
+		<aop:aspect id="logger" ref="logger">
+			<!--定义切点，是连接点的集合-->
+			<aop:pointcut expression="execution(* com.aaron.ren.aop..*.*(..))" id="udpateUserMethod" />
+
+			<!--定义通知类型-->
+			<aop:before method="recordBefore" pointcut-ref="udpateUserMethod"  />
+			<aop:after method="recordAfter" pointcut-ref="udpateUserMethod" />
+		</aop:aspect>
+	</aop:config>
+
+	<!--这个配置可以隐去 这里主要配置是说明确定动态代理的实现是基于类还是接口实现 基于类实现是使用CGlib 基于接口是JDK动态代理-->
+	<aop:aspectj-autoproxy proxy-target-class="true" expose-proxy="true"/>
+
+</beans>

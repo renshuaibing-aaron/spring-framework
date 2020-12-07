@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans.xsd ">
+	<bean id="display" class="com.aaron.ren.ioc.jiexitag.bean.Display">
+		<lookup-method name="getCar" bean="hongqi"/>
+	</bean>
+
+
+	<bean id="hongqi" class="com.aaron.ren.ioc.jiexitag.bean.Hongqi">
+	</bean>
+
+	<bean id="bmw" class="com.aaron.ren.ioc.jiexitag.bean.Bmw">
+	</bean>
+
+
+</beans>

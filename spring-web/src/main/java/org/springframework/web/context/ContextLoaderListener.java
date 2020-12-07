@@ -91,7 +91,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 		//当Servlet 容器启动Web 应用时调用该方法。在调用完该方法之后，容器再对Filter 初始化
 		//并且对那些在Web 应用启动时就需要被初始化的Servlet 进行初始化。
 		//监听tomcat的启动
-		System.out.println("=========ContextLoaderListener#contextInitialized(tomcat启动，初始化webapplication)==================");
+		System.out.println("=========【ContextLoaderListener#contextInitialized(tomcat启动，初始化Root WebApplicationContext) 】=========");
 		initWebApplicationContext(event.getServletContext());
 	}
 

@@ -5,6 +5,8 @@ import org.w3c.dom.Element;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
+ *
+ *  todo 注意这里是解析<tx:annotation-driven> 这个自定义标签
  * {@code NamespaceHandler} allowing for the configuration of
  * declarative transaction management using either XML or using annotations.
  *

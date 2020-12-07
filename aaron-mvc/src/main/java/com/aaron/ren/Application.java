@@ -27,7 +27,7 @@ public class Application {
 		tomcat.setPort(9090);
 
         //这个地方代表这个是web项目，需要加载jspservlet解析器？
-		//tomcat.addWebapp("/","");
+		tomcat.addWebapp("/","");
 
 		Context rootCtx = tomcat.addContext("/", base.getAbsolutePath());
 		DispatcherServlet dispatcher = new DispatcherServlet(contest);

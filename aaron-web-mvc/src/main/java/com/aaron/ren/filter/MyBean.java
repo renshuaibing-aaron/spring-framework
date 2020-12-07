@@ -1,4 +1,4 @@
-package com.aaron.ren.bean;
+package com.aaron.ren.filter;
 
 
 public class MyBean {

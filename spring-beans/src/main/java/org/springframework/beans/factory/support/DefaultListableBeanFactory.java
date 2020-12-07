@@ -813,10 +813,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	@Override
 	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 			throws BeanDefinitionStoreException {
-
+		// 校验 beanName 与 beanDefinition 非空
 		Assert.hasText(beanName, "Bean name must not be empty");
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
 
+		// <1> 校验 BeanDefinition 。
+		// 这是注册前的最后一次校验了，主要是对属性 methodOverrides 进行校验。
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
 				((AbstractBeanDefinition) beanDefinition).validate();
@@ -828,14 +830,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 		// old? 还记得 “允许 bean 覆盖” 这个配置吗？allowBeanDefinitionOverriding
 		// 之后会看到，所有的 Bean 注册后会放入这个 beanDefinitionMap 中
-
-
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 
-		// 处理重复名称的 Bean 定义的情况
+		// 处理重复名称的 Bean 定义的情况 如果已经存在
 		if (existingDefinition != null) {
 
-			// // 如果不允许覆盖的话，抛异常
+			// 已经存在但是如果不允许覆盖的话，抛异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
 						"Cannot register bean definition [" + beanDefinition + "] for bean '" + beanName +
@@ -843,7 +843,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			else if (existingDefinition.getRole() < beanDefinition.getRole()) {
 				// e.g. was ROLE_APPLICATION, now overriding with ROLE_SUPPORT or ROLE_INFRASTRUCTURE
-
+				// 覆盖 beanDefinition 大于 被覆盖的 beanDefinition 的 ROLE ，打印 info 日志
 				// log...用框架定义的 Bean 覆盖用户自定义的 Bean
 				if (logger.isWarnEnabled()) {
 					logger.warn("Overriding user-defined bean definition for bean '" + beanName +
@@ -851,6 +851,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							existingDefinition + "] with [" + beanDefinition + "]");
 				}
 			}
+			// 覆盖 beanDefinition 与 被覆盖的 beanDefinition 不相同，打印 日志
 			else if (!beanDefinition.equals(existingDefinition)) {
 				// log...用新的 Bean 覆盖旧的 Bean
 				if (logger.isInfoEnabled()) {
@@ -859,6 +860,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			// 其它，打印 debug 日志
 			else {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Overriding bean definition for bean '" + beanName +
@@ -869,23 +871,30 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				// log...用同等的 Bean 覆盖旧的 Bean，这里指的是 equals 方法返回 true 的 Bean
 			}
 
-			// 覆盖
+			// 允许覆盖，直接覆盖原有的 BeanDefinition 到 beanDefinitionMap 中。
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
+		// <4> 如果未存在
 		else {
 
 			// 判断是否已经有其他的 Bean 开始初始化了.
 			// 注意，"注册Bean" 这个动作结束，Bean 依然还没有初始化，我们后面会有大篇幅说初始化过程，
 			// 在 Spring 容器启动的最后，会 预初始化 所有的 singleton beans
-
+			// 检测创建 Bean 阶段是否已经开启，如果开启了则需要对 beanDefinitionMap 进行并发控制
 			if (hasBeanCreationStarted()) {
+
+				// beanDefinitionMap 为全局变量，避免并发情况
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
+
+					// 添加到 BeanDefinition 到 beanDefinitionMap 中。
 					this.beanDefinitionMap.put(beanName, beanDefinition);
+					// 添加 beanName 到 beanDefinitionNames 中
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
 					updatedDefinitions.addAll(this.beanDefinitionNames);
 					updatedDefinitions.add(beanName);
 					this.beanDefinitionNames = updatedDefinitions;
+					// 从 manualSingletonNames 移除 beanName
 					if (this.manualSingletonNames.contains(beanName)) {
 						Set<String> updatedSingletons = new LinkedHashSet<>(this.manualSingletonNames);
 						updatedSingletons.remove(beanName);
@@ -894,11 +903,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 			}
 			else {
-				// 最正常的应该是进到这里。
-
+				// 最正常的应该是进到这里
 				// 将 BeanDefinition 放到这个 map 中，这个 map 保存了所有的 BeanDefinition
 				// Still in startup registration phase
-
 				System.out.println("===========DefaultListableBeanFactory#registerBeanDefinition===============");
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 
@@ -916,6 +923,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			this.frozenBeanDefinitionNames = null;
 		}
 
+		// <5> 重新设置 beanName 对应的缓存
 		if (existingDefinition != null || containsSingleton(beanName)) {
 			resetBeanDefinition(beanName);
 		}

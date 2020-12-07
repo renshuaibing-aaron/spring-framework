@@ -87,6 +87,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/** String resolvers to apply e.g. to annotation attribute values */
 	private final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
 
+	//todo  这里很奇怪 这里为什么用的是CopyOnWriteArrayList 这个类
+	//  这个list里面放置的都是前置后置处理器
 	/** BeanPostProcessors to apply in createBean */
 	private final List<BeanPostProcessor> beanPostProcessors = new CopyOnWriteArrayList<>();
 
@@ -198,6 +200,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// <1> 返回 bean 名称，剥离工厂引用前缀。
 		// 如果 name 是 alias ，则获取对应映射的 beanName
 		final String beanName = transformedBeanName(name);
+
 		Object bean;
 		// Eagerly check singleton cache for manually registered singletons.
 		/**
@@ -246,7 +249,6 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			// 完成 FactoryBean 的相关处理，并用来获取 FactoryBean 的处理结果
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
-
 		else {
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
@@ -355,7 +357,6 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					//返回beanName对应的实例对象
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
-
 				// 创建 prototype 的实例 原型模式
 				else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
@@ -371,10 +372,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 						//创建实例后的操作（将创建完的beanName从prototypesCurrentlyInCreation缓存中移除）
 						afterPrototypeCreation(beanName);
 					}
-					//返回beanName对应的实例对象
+					//返回beanName对应的实例对象 ？？
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
-
 				// 如果不是 singleton 和 prototype 的话，需要委托给相应的实现类来处理
 				else {
 					//其他scope的bean创建，可能是request之类的
@@ -892,6 +892,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	@Override
 	public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+		//
+		System.out.println("=========【在容器里面注册前后置处理器】=============");
 		Assert.notNull(beanPostProcessor, "BeanPostProcessor must not be null");
 		// Remove from old position, if any
 		this.beanPostProcessors.remove(beanPostProcessor);
@@ -1647,6 +1649,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
+	 * todo 获取给定bean实例的对象，可以是bean *实例本身，也可以是FactoryBean时创建的对象
 	 * Get the object for the given bean instance, either the bean
 	 * instance itself or its created object in case of a FactoryBean.
 	 * @param beanInstance the shared bean instance

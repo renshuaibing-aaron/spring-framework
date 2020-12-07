@@ -48,9 +48,12 @@
 			<tx:method name="*" propagation="REQUIRED"/>
 		</tx:attributes>
 	</tx:advice>
+
+
 	<aop:config>
-		<aop:pointcut id="userPointcut" expression="execution (* com.aaron.ren.transaction.*.*(..))"/>
+		<aop:pointcut id="userPointcut" expression="execution (* com.aaron.ren.transaction.aop.type3.*.*(..))"/>
 		<aop:advisor advice-ref="userAdvice" pointcut-ref="userPointcut"/>
 	</aop:config>
+
 
 </beans>

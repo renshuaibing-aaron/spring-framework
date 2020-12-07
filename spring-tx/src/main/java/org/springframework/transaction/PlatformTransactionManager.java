@@ -3,6 +3,7 @@ package org.springframework.transaction;
 import org.springframework.lang.Nullable;
 
 /**
+ * sping 事务的核心接口
  * This is the central interface in Spring's transaction infrastructure.
  * Applications can use this directly, but it is not primarily meant as API:
  * Typically, applications will work with either TransactionTemplate or

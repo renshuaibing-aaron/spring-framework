@@ -6,4 +6,8 @@ public class PersonA {
 	}
 
 	private PersonB personB;
+
+	public PersonB getPersonB() {
+		return personB;
+	}
 }

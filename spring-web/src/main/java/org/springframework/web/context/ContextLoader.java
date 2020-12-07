@@ -27,6 +27,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * todo 对根应用程序上下文执行实际的初始化工作。 *由{@link ContextLoaderListener}调用
  * Performs the actual initialization work for the root application context.
  * Called by {@link ContextLoaderListener}.
  *
@@ -119,6 +120,9 @@ public class ContextLoader {
 	private static final Properties defaultStrategies;
 
 	static {
+		//这个配置开发者无需关心
+		//作用 如果我们没有在 <context-param /> 标签中，配置指定的 WebApplicationContext 类型，
+		// 就使用 XmlWebApplicationContext 类。一般情况下，我们也不会主动指定
 		// Load default strategy implementations from properties file.
 		// This is currently strictly internal and not meant to be customized
 		// by application developers.
@@ -147,6 +151,7 @@ public class ContextLoader {
 
 
 	/**
+	 * 这个是对象属性
 	 * The root WebApplicationContext instance that this loader manages.
 	 */
 	@Nullable
@@ -244,16 +249,20 @@ public class ContextLoader {
 	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
 		System.out.println("===========【初始化 root WebApplicationContext 对象】============");
 		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
+			//说明在web.xml 里面不能配置多个ContextLoader 属性
 			throw new IllegalStateException(
 					"Cannot initialize context because there is already a root application context present - " +
 					"check whether you have multiple ContextLoader* definitions in your web.xml!");
 		}
 
 		Log logger = LogFactory.getLog(ContextLoader.class);
+
+		//打印日志
 		servletContext.log("Initializing Spring root WebApplicationContext");
 		if (logger.isInfoEnabled()) {
 			logger.info("Root WebApplicationContext: initialization started");
 		}
+		//记录时间
 		long startTime = System.currentTimeMillis();
 
 		try {
@@ -265,6 +274,7 @@ public class ContextLoader {
 				System.out.println("===========【创建 root WebApplicationContext 对象】===============");
 				this.context = createWebApplicationContext(servletContext);
 			}
+			//如果是 ConfigurableWebApplicationContext 的子类，如果未刷新，则进行配置和刷新
 			if (this.context instanceof ConfigurableWebApplicationContext) {
 				ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
 
@@ -286,6 +296,7 @@ public class ContextLoader {
 			// 将当前上下文环境存储到ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE变量中
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
+			// 记录到 currentContext 或 currentContextPerThread 中
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
 			if (ccl == ContextLoader.class.getClassLoader()) {
 				currentContext = this.context;
@@ -298,11 +309,14 @@ public class ContextLoader {
 				logger.debug("Published root WebApplicationContext as ServletContext attribute with name [" +
 						WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE + "]");
 			}
+
+			//打印日志
 			if (logger.isInfoEnabled()) {
 				long elapsedTime = System.currentTimeMillis() - startTime;
 				logger.info("Root WebApplicationContext: initialization completed in " + elapsedTime + " ms");
 			}
 
+			//返回 context
 			return this.context;
 		}
 		catch (RuntimeException ex) {
@@ -337,11 +351,13 @@ public class ContextLoader {
 
 		// 1.确定实例化WebApplicationContext所需的类
 		Class<?> contextClass = determineContextClass(sc);
+
+		// 2判断 context 的类，是否符合 ConfigurableWebApplicationContext 的类型
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
 			throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
 					"] is not of type [" + ConfigurableWebApplicationContext.class.getName() + "]");
 		}
-		// 2.实例化得到的WebApplicationContext类
+		// 3.实例化得到的WebApplicationContext类
 		return (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
 	}
 
@@ -366,6 +382,8 @@ public class ContextLoader {
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
 	 */
 	protected Class<?> determineContextClass(ServletContext servletContext) {
+
+		// 获得参数 contextClass 的值
 		String contextClassName = servletContext.getInitParameter(CONTEXT_CLASS_PARAM);
 		// 1.自定义
 		if (contextClassName != null) {
@@ -418,7 +436,7 @@ public class ContextLoader {
 						ObjectUtils.getDisplayString(sc.getContextPath()));
 			}
 		}
-
+		// 设置 context 的 ServletContext 属性
 		wac.setServletContext(sc);
 		/**
 		 * 2.设置配置文件路径，如

@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 			System.out.println("=======进行事务处理================"+user);
 			jdbcTemplate.update("insert into user (name) value (?)", user.getName());
 			// [2] 范例抛出异常
-			System.out.println(12/0);
+			//System.out.println(12/0);
 			transactionManager.commit(status);
 		} catch (Exception e) {
 			transactionManager.rollback(status);

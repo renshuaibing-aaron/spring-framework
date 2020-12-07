@@ -774,7 +774,7 @@ public class MethodParameter {
 					List<KParameter> parameters = function.getParameters();
 					KParameter parameter = parameters
 							.stream()
-							.bean(predicate)
+							.filter(predicate)
 							.collect(Collectors.toList())
 							.get(index);
 					return (parameter.getType().isMarkedNullable() || parameter.isOptional());

@@ -1,4 +1,4 @@
-package com.aaron.ren.bean;
+package com.aaron.ren.filter;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * @author renshuaibing
  */
-public class HelloWorldFilter implements bean {
+public class HelloWorldFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {

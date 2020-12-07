@@ -71,6 +71,12 @@ public abstract class BeanFactoryUtils {
 	 * @see BeanFactory#FACTORY_BEAN_PREFIX
 	 */
 	public static String transformedBeanName(String name) {
+
+		/**
+		 * 去除 FactoryBean 的修饰符 &
+		 * 如果 name 以 “&” 为前缀，那么会去掉该 "&" 。
+		 * 例如，name = "&studentService" ，则会是 name = "studentService"。
+		 */
 		Assert.notNull(name, "'name' must not be null");
 		String beanName = name;
 		while (beanName.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {

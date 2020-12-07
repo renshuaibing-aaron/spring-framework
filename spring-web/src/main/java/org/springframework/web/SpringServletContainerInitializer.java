@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web;
 
 import java.lang.reflect.Modifier;
@@ -31,6 +15,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * todo   通过Servlet 3.0的新特性 进行减少web.xml配置
  * Servlet 3.0 {@link ServletContainerInitializer} designed to support code-based
  * configuration of the servlet container using Spring's {@link WebApplicationInitializer}
  * SPI as opposed to (or possibly in combination with) the traditional
@@ -148,6 +133,10 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 			for (Class<?> waiClass : webAppInitializerClasses) {
 				// Be defensive: Some servlet containers provide us with invalid classes,
 				// no matter what @HandlesTypes says...
+				//
+				//由于 servlet 厂商实现的差异，onStartup 方法会加载我们本不想处理的 class，所以进行了特判。
+				// 另外，也要注意下 @HandlesTypes(WebApplicationInitializer.class) 注解，
+				// 如果厂商正确的实现 @HandlesTypes 的逻辑，传入的 Set<Class<?>> webAppInitializerClasses 都是 WebApplicationInitializer 对象
 				if (!waiClass.isInterface() && !Modifier.isAbstract(waiClass.getModifiers()) &&
 						WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
 					try {
@@ -168,6 +157,8 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 
 		servletContext.log(initializers.size() + " Spring WebApplicationInitializers detected on classpath");
 		AnnotationAwareOrderComparator.sort(initializers);
+		//没有在 SpringServletContainerInitializer 中直接对 servlet 和 filter 进行注册，
+		// 而是委托给了一个陌生的类 org.springframework.web.WebApplicationInitializer
 		for (WebApplicationInitializer initializer : initializers) {
 			initializer.onStartup(servletContext);
 		}

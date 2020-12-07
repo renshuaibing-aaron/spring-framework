@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web.reactive;
 
 import java.util.ArrayList;
@@ -150,17 +134,22 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 			ServerHttpRequest request = exchange.getRequest();
 			logger.debug("Processing " + request.getMethodValue() + " request for [" + request.getURI() + "]");
 		}
+		//校验handlerMapping集合是否为空
 		if (this.handlerMappings == null) {
 			return Mono.error(HANDLER_NOT_FOUND_EXCEPTION);
 		}
+		//依次遍历handlerMapping集合进行请求处理
 		return Flux.fromIterable(this.handlerMappings)
 				.concatMap(mapping -> mapping.getHandler(exchange))
+				//通过mapping获取mapping对应的handler
 				.next()
 				.switchIfEmpty(Mono.error(HANDLER_NOT_FOUND_EXCEPTION))
+				//调用handler处理
 				.flatMap(handler -> invokeHandler(exchange, handler))
 				.flatMap(result -> handleResult(exchange, result));
 	}
 
+	//判断当前handlerAdapter与handler是否匹配
 	private Mono<HandlerResult> invokeHandler(ServerWebExchange exchange, Object handler) {
 		if (this.handlerAdapters != null) {
 			for (HandlerAdapter handlerAdapter : this.handlerAdapters) {

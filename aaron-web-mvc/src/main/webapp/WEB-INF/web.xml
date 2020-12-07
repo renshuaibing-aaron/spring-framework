@@ -20,6 +20,10 @@
 
 
 
+
+<!--	Spring分为多个文件进行分别的配置，其中在servlet-name中如果没有指定init-param属性，
+那么系统自动寻找的spring配置文件为[servlet-name]-servlet.xml-->
+
 	<!-- [2] Spring MVC配置 -->
 	<!--配置了 org.springframework.web.servlet.DispatcherServlet 对象。
 	这是一个 javax.servlet.http.HttpServlet 对象，它除了拦截我们制定的 / 请求外，

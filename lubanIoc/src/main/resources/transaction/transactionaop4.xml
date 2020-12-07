@@ -27,10 +27,12 @@
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
 
-	<context:component-scan base-package="com.aaron.ren.transaction.test"/>
+	<context:component-scan base-package="com.aaron.ren.transaction.aop"/>
 
 
+	<!--这个就相当于是开启事务机制 也是springioc的自定义标签 然后对有注解的事务进行aop-->
 	<!--开启tx注解  这个是必须要有的 没有这个 将不会开启事务机制-->
+	<!--这里是自定义注解 需要用自定义解析器解析, 这里的作用是 @EnableTransactionManagement 一样的-->
 	<tx:annotation-driven transaction-manager="transactionManager"/>
 
 	<!--

@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web.multipart;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,6 +69,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface MultipartResolver {
 
 	/**
+	 * 是否为 multipart 请求
 	 * Determine if the given request contains multipart content.
 	 * <p>Will typically check for content type "multipart/form-data", but the actually
 	 * accepted requests might depend on the capabilities of the resolver implementation.
@@ -94,6 +79,7 @@ public interface MultipartResolver {
 	boolean isMultipart(HttpServletRequest request);
 
 	/**
+	 * 将 HttpServletRequest 请求封装成 MultipartHttpServletRequest 对象
 	 * Parse the given HTTP request into multipart files and parameters,
 	 * and wrap the request inside a
 	 * {@link org.springframework.web.multipart.MultipartHttpServletRequest}
@@ -113,6 +99,7 @@ public interface MultipartResolver {
 	MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException;
 
 	/**
+	 * 清理处理 multipart 产生的资源，例如临时文件
 	 * Cleanup any resources used for the multipart handling,
 	 * like a storage for the uploaded files.
 	 * @param request the request to cleanup resources for

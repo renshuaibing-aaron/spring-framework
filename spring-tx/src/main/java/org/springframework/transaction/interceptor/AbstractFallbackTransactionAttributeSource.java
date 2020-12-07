@@ -129,6 +129,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	}
 
 	/**
+	 * 提取事务标签
 	 * Same signature as {@link #getTransactionAttribute}, but doesn't cache the result.
 	 * {@link #getTransactionAttribute} is effectively a caching decorator for this method.
 	 * <p>As of 4.1.8, this method can be overridden.
@@ -144,6 +145,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 
 		// The method may be on an interface, but we need attributes from the target class.
 		// If the target class is null, the method will be unchanged.
+		//Method 代表接口 中的方法 ， specificMethod 代表实现类 中的方法
 		Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
 
 		// First try is the method in the target class.
@@ -159,7 +161,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		if (txAttr != null && ClassUtils.isUserLevelMethod(method)) {
 			return txAttr;
 		}
-
+         //如果存在接口 则在接口中取寻找
 		if (specificMethod != method) {
 			// Fallback is to look at the original method.
 			//接口

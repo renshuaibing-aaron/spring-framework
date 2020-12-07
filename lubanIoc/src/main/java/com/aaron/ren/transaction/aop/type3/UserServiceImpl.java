@@ -10,6 +10,6 @@ public class UserServiceImpl  {
 
 	public void insert(User user) {
 		jdbcTemplate.update("insert into user (name) value (?)", user.getName());
-		System.out.println(12/0);
+		//System.out.println(12/0);
 	}
 }

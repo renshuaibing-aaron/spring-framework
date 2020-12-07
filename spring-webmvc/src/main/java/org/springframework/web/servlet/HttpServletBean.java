@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web.servlet;
 
 import java.util.Enumeration;
@@ -47,6 +31,7 @@ import org.springframework.web.context.support.ServletContextResourceLoader;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
+ * HttpServletBean ，负责将 ServletConfig 设置到当前 Servlet 对象中
  * Simple extension of {@link javax.servlet.http.HttpServlet} which treats
  * its config parameters ({@code init-param} entries within the
  * {@code servlet} tag in {@code web.xml}) as bean properties.
@@ -84,6 +69,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	/** Logger available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	//这个环境属性可以自动注入的原因是实现了EnvironmentAware 接口
 	@Nullable
 	private ConfigurableEnvironment environment;
 
@@ -147,7 +133,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	@Override
 	public final void init() throws ServletException {
 
-		System.out.println("==========HttpServletBean#init======");
+		System.out.println("==========【HttpServletBean#init】这里也是DispatcherServlet 的init入口======");
 		if (logger.isDebugEnabled()) {
 			logger.debug("Initializing servlet '" + getServletName() + "'");
 		}
@@ -166,13 +152,18 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		 *  </servlet>
 		 *  这里会解析init-param列表。
 		 */
+		//解析 <init-param /> 标签，封装到 PropertyValues pvs 中
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
+				//将当前的这个 Servlet 对象，转化成一个 BeanWrapper 对象。从而能够以 Spring 的方式来将 pvs 注入到该 BeanWrapper 对象中
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
+				//注册自定义属性编辑器，一旦碰到 Resource 类型的属性，将会使用 ResourceEditor 进行解析
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
+				// 空实现，留给子类覆盖
 				initBeanWrapper(bw);
+				//以 Spring 的方式来将 pvs 注入到该 BeanWrapper 对象中
 				bw.setPropertyValues(pvs, true);
 			}
 			catch (BeansException ex) {

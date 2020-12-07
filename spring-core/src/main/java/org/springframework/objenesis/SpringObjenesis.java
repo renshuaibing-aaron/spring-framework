@@ -16,6 +16,7 @@
 
 package org.springframework.objenesis;
 
+
 import org.springframework.core.SpringProperties;
 import org.springframework.objenesis.instantiator.ObjectInstantiator;
 import org.springframework.objenesis.strategy.InstantiatorStrategy;

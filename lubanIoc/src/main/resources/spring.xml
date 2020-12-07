@@ -8,17 +8,17 @@
 	</bean>
 
 	<bean id="weaponXml" class="com.aaron.ren.ioc.threetypes.xml.WeaponXml">
-		<property name="type" value="knife"/>
+		<property name="type" value="1234"/>
 	</bean>
+	<!--
 
+        <bean id="car" class="com.aaron.ren.ioc.beanfactoryandfactorybean.CarFactoryBean"  >
 
-<!--
-	<bean id="car" class="com.aaron.ren.ioc.beanfactoryandfactorybean.CarFactoryBean">
+            <property name="carInfo" value="红旗CA72,200,20000.00"/>
 
-		<property name="carInfo" value="红旗CA72,200,20000.00"/>
+        </bean>
+    -->
 
-	</bean>
--->
 
 
 

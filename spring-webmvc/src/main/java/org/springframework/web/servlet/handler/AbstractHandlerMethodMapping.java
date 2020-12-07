@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.web.servlet.handler;
 
 import java.lang.reflect.Method;
@@ -46,6 +30,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
+ *
+ * 基于 Method 进行匹配。例如，我们所熟知的 @RequestMapping 等注解的方式。
  * Abstract base class for {@link HandlerMapping} implementations that define
  * a mapping between a request and a {@link HandlerMethod}.
  *
@@ -88,9 +74,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	private boolean detectHandlerMethodsInAncestorContexts = false;
 
+	/**
+	 * Mapping 命名策略
+	 */
 	@Nullable
 	private HandlerMethodMappingNamingStrategy<T> namingStrategy;
 
+	/**
+	 * Mapping 注册表
+	 */
 	private final MappingRegistry mappingRegistry = new MappingRegistry();
 
 
@@ -190,6 +182,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	}
 
 	/**
+	 * 这个方法的作用是把controller变成了HandlerMethod
 	 * Scan beans in the ApplicationContext, detect and register handler methods.
 	 * @see #isHandler
 	 * @see #detectHandlerMethods
@@ -305,16 +298,19 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	// Handler method lookup
 
 	/**
+	 * todo  这里可以看出这里实现的 这里获取的便是Handler 的类型是 HandlerMethod
 	 * Look up a handler method for the given request.
 	 */
 	@Override
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+		// 根据当前请求获取“查找路径”
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up handler method for path " + lookupPath);
 		}
 		this.mappingRegistry.acquireReadLock();
 		try {
+			// 获取当前请求最佳匹配的处理方法（即Controller类的方法中）
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			if (logger.isDebugEnabled()) {
 				if (handlerMethod != null) {

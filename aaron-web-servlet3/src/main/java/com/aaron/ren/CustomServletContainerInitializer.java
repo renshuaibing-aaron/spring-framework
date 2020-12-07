@@ -1,12 +1,16 @@
 package com.aaron.ren;
 
-import com.aaron.ren.bean.HelloWorldFilter;
+import com.aaron.ren.filter.HelloWorldFilter;
 import com.aaron.ren.servlet.HelloWorldServlet;
 
 import javax.servlet.*;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * 这里的web容器怎么识别这个类 用到SPI机制
+ * @author renshuaibing
+ */
 public class CustomServletContainerInitializer implements ServletContainerInitializer {
 
 	private final static String JAR_HELLO_URL = "/hello";

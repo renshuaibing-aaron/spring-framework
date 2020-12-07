@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.beans.factory.xml;
 
 import java.io.IOException;
@@ -320,6 +304,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	}
 
 	/**
+	 * 解析工作分为三步
+	 * 1、解析默认标签。
+	 * 2、解析默认标签后下得自定义标签。
+	 * 3、注册解析后的 BeanDefinition 。
 	 * Process the given bean element, parsing the bean definition
 	 * and registering it with the registry.
 	 */
@@ -335,7 +323,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
-				// 我们把这步叫做 注册Bean 吧
+				//进行 BeanDefinition 的注册
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
 			catch (BeanDefinitionStoreException ex) {
@@ -343,7 +331,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
-			// 注册完成后，发送事件，本文不展开说这个
+			// 发出响应事件，通知相关的监听器，已完成该 Bean 标签的解析
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}

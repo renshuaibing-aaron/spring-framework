@@ -7,10 +7,12 @@
       http://www.springframework.org/schema/aop
       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-	<bean id="personB" class="com.aaron.ren.ioc.circulardependency.xmltype.PersonB">
+	<bean id="personB" class="com.aaron.ren.ioc.circulardependency.xmltype.PersonB" lazy-init="true">
+		<property name="personA" ref="personA"/>
 	</bean>
 
-	<bean id="personA" class="com.aaron.ren.ioc.circulardependency.xmltype.PersonA">
+	<bean id="personA" class="com.aaron.ren.ioc.circulardependency.xmltype.PersonA" lazy-init="true">
+		<property name="personB" ref="personB"/>
 	</bean>
 
 

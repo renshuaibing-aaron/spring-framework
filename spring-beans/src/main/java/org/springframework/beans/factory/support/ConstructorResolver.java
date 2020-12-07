@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.beans.factory.support;
 
 import java.beans.ConstructorProperties;
@@ -61,6 +45,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 构造方法或者工厂类初始化 bean 的委托类
  * Delegate for resolving constructors and factory methods.
  * Performs constructor resolution through argument matching.
  *
@@ -110,15 +95,14 @@ class ConstructorResolver {
 	 */
 	public BeanWrapper autowireConstructor(String beanName, RootBeanDefinition mbd,
 			@Nullable Constructor<?>[] chosenCtors, @Nullable Object[] explicitArgs) {
-		//实力一个BeanWrapperImpl 对象很好理解
-		//前面外部返回的BeanWrapper 其实就是这个BeanWrapperImpl
-		//因为BeanWrapper是个接口
+		// 封装 BeanWrapperImpl 对象，并完成初始化
 		BeanWrapperImpl bw = new BeanWrapperImpl();
 		this.beanFactory.initBeanWrapper(bw);
 
-		Constructor<?> constructorToUse = null;
-		ArgumentsHolder argsHolderToUse = null;
-		Object[] argsToUse = null;
+		// 获得 constructorToUse、argsHolderToUse、argsToUse
+		Constructor<?> constructorToUse = null; // 构造函数
+		ArgumentsHolder argsHolderToUse = null;// 构造参数
+		Object[] argsToUse = null; // 构造参数
 		//确定参数值列表
 		//argsToUse可以有两种办法设置
 		//第一种通过beanDefinition设置
@@ -467,20 +451,25 @@ class ConstructorResolver {
 	 */
 	public BeanWrapper instantiateUsingFactoryMethod(
 			String beanName, RootBeanDefinition mbd, @Nullable Object[] explicitArgs) {
-
+		// 构造 BeanWrapperImpl 对象
 		BeanWrapperImpl bw = new BeanWrapperImpl();
+		// 初始化 BeanWrapperImpl
+		// 向BeanWrapper对象中添加 ConversionService 对象和属性编辑器 PropertyEditor 对象
 		this.beanFactory.initBeanWrapper(bw);
 
+		// 获得 factoryBean、factoryClass、isStatic、factoryBeanName 属性
 		Object factoryBean;
 		Class<?> factoryClass;
 		boolean isStatic;
 
 		String factoryBeanName = mbd.getFactoryBeanName();
+		// 工厂名不为空
 		if (factoryBeanName != null) {
 			if (factoryBeanName.equals(beanName)) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
 						"factory-bean reference points back to the same bean definition");
 			}
+			// 获取工厂实例
 			factoryBean = this.beanFactory.getBean(factoryBeanName);
 			if (mbd.isSingleton() && this.beanFactory.containsSingleton(beanName)) {
 				throw new ImplicitlyAppearedSingletonException();
@@ -489,6 +478,8 @@ class ConstructorResolver {
 			isStatic = false;
 		}
 		else {
+			// 工厂名为空，则其可能是一个静态工厂
+			// 静态工厂创建bean，必须要提供工厂的全类名
 			// It's a static factory method on the bean class.
 			if (!mbd.hasBeanClass()) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
@@ -498,26 +489,36 @@ class ConstructorResolver {
 			factoryClass = mbd.getBeanClass();
 			isStatic = true;
 		}
-
-		Method factoryMethodToUse = null;
+		// <2> 获得 factoryMethodToUse、argsHolderToUse、argsToUse 属性
+		Method factoryMethodToUse = null;  // 工厂方法
 		ArgumentsHolder argsHolderToUse = null;
-		Object[] argsToUse = null;
+		Object[] argsToUse = null;  // 工厂方法
 
+		// <2.1> 如果指定了构造参数则直接使用
+		// 在调用 getBean 方法的时候指定了方法参数
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
 		else {
+			// 没有指定，则尝试从配置文件中解析
 			Object[] argsToResolve = null;
+			// <2.2> 首先尝试从缓存中获取
 			synchronized (mbd.constructorArgumentLock) {
+				// 获取缓存中的构造函数或者工厂方法
 				factoryMethodToUse = (Method) mbd.resolvedConstructorOrFactoryMethod;
 				if (factoryMethodToUse != null && mbd.constructorArgumentsResolved) {
 					// Found a cached factory method...
+					// 获取缓存中的构造参数
 					argsToUse = mbd.resolvedConstructorArguments;
 					if (argsToUse == null) {
+						// 获取缓存中的构造函数参数的包可见字段
 						argsToResolve = mbd.preparedConstructorArguments;
 					}
 				}
 			}
+			// 缓存中存在,则解析存储在 BeanDefinition 中的参数
+			// 如给定方法的构造函数 A(int ,int )，则通过此方法后就会把配置文件中的("1","1")转换为 (1,1)
+			// 缓存中的值可能是原始值也有可能是最终值
 			if (argsToResolve != null) {
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, factoryMethodToUse, argsToResolve);
 			}
@@ -526,18 +527,23 @@ class ConstructorResolver {
 		if (factoryMethodToUse == null || argsToUse == null) {
 			// Need to determine the factory method...
 			// Try all methods with this name to see if they match the given arguments.
+			// 获取工厂方法的类全名称
 			factoryClass = ClassUtils.getUserClass(factoryClass);
-
+			// 获取所有待定方法
 			Method[] rawCandidates = getCandidateMethods(factoryClass, mbd);
+			// 检索所有方法，这里是对方法进行过滤
 			List<Method> candidateList = new ArrayList<>();
 			for (Method candidate : rawCandidates) {
+				// 如果有static 且为工厂方法，则添加到 candidateSet 中
 				if (Modifier.isStatic(candidate.getModifiers()) == isStatic && mbd.isFactoryMethod(candidate)) {
 					candidateList.add(candidate);
 				}
 			}
 			Method[] candidates = candidateList.toArray(new Method[0]);
+			// 排序构造函数
+			// public 构造函数优先参数数量降序，非 public 构造函数参数数量降序
 			AutowireUtils.sortFactoryMethods(candidates);
-
+			// 用于承载解析后的构造函数参数的值
 			ConstructorArgumentValues resolvedValues = null;
 			boolean autowiring = (mbd.getResolvedAutowireMode() == AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
 			int minTypeDiffWeight = Integer.MAX_VALUE;
@@ -550,8 +556,12 @@ class ConstructorResolver {
 			else {
 				// We don't have arguments passed in programmatically, so we need to resolve the
 				// arguments specified in the constructor arguments held in the bean definition.
+				// <2.3> getBean() 没有传递参数，则需要解析保存在 BeanDefinition 构造函数中指定的参数
 				if (mbd.hasConstructorArgumentValues()) {
+					// 构造函数的参数
 					ConstructorArgumentValues cargs = mbd.getConstructorArgumentValues();
+					// 解析构造函数的参数
+					// 将该 bean 的构造函数参数解析为 resolvedValues 对象，其中会涉及到其他 bean
 					resolvedValues = new ConstructorArgumentValues();
 					minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
 				}

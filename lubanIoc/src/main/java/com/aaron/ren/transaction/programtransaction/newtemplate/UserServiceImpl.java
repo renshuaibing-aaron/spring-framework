@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
 				jdbcTemplate.update("insert into user (name) value (?)", user.getName());
 				System.out.println(12/0);
-				// transactionStatus.setRollbackOnly();
+				//transactionStatus.setRollbackOnly();
 				return null;
 			}
 		});

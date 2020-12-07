@@ -16,6 +16,7 @@
 
 package org.springframework.cglib.core;
 
+
 /**
  * Custom extension of CGLIB's {@link DefaultNamingPolicy}, modifying
  * the tag in generated class names from "ByCGLIB" to "BySpringCGLIB".

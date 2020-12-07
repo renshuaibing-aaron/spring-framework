@@ -9,9 +9,9 @@ http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 
-	<bean id="userDao" class="com.aaron.ren.aop.xml.UserDaoImpl"/>
+	<bean id="userDao" class="com.aaron.ren.aop.xml.UserDaoImpl"  lazy-init="true"/>
 
-	<bean id="logger" class="com.aaron.ren.aop.xml.Logger" />
+	<bean id="logger" class="com.aaron.ren.aop.xml.Logger"  lazy-init="true"/>
 
 	<!-- 切面：切入点和通知 -->
 	<aop:config>
@@ -24,7 +24,7 @@ http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 		</aop:aspect>
 	</aop:config>
 
-	<!--这个配置是不是可以隐去-->
-	<aop:aspectj-autoproxy/>
+	<!--这个配置可以隐去 这里主要配置是说明确定动态代理的实现是基于类还是接口实现 基于类实现是使用CGlib 基于接口是JDK动态代理-->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
 
 </beans>

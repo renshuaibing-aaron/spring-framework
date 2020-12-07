@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.context.support;
 
 import org.springframework.beans.BeansException;
@@ -24,8 +8,25 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * todo org.springframework.context.support.AbstractApplicationContext
+ *       org.springframework.context.support.AbstractRefreshableApplicationContext
+ *             org.springframework.context.support.AbstractRefreshableConfigApplicationContext
+ *                   org.springframework.context.support.AbstractXmlApplicationContext
+ *                         org.springframework.context.support.ClassPathXmlApplicationContext
+ *
  * ApplicationContext 继承自 BeanFactory，但是它不应该被理解为 BeanFactory 的实现类，
  * 而是说其内部持有一个实例化的 BeanFactory（DefaultListableBeanFactory）。以后所有的 BeanFactory 相关的操作其实是给这个实例来处理的。
+ *
+ * BeanFactory：Spring 容器 Bean 的管理
+ * MessageSource：管理 message ，实现国际化等功能
+ * ApplicationEventPublisher：事件发布
+ * ResourcePatternResolver：资源加载
+ * EnvironmentCapable：系统 Environment（profile + Properties） 相关
+ * Lifecycle：管理生命周期
+ * Closable：关闭，释放资源
+ * InitializingBean：自定义初始化
+ * BeanNameAware：设置 beanName 的 Aware 接口
+ *
  * Standalone XML application context, taking the context definition files
  * from the class path, interpreting plain paths as class path resource names
  * that include the package path (e.g. "mypackage/myresource.txt"). Useful for

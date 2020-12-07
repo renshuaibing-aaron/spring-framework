@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.beans.factory.support;
 
 import java.lang.reflect.Constructor;
@@ -114,13 +98,18 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * @return new instance of the dynamically generated subclass
 		 */
 		public Object instantiate(@Nullable Constructor<?> ctor, @Nullable Object... args) {
+
+			// <x> 通过 Cglib 创建一个代理类
 			Class<?> subclass = createEnhancedSubclass(this.beanDefinition);
 			Object instance;
+
+			// <y> 没有构造器，通过 BeanUtils 使用默认构造器创建一个bean实例
 			if (ctor == null) {
 				instance = BeanUtils.instantiateClass(subclass);
 			}
 			else {
 				try {
+					// 获取代理类对应的构造器对象，并实例化 bean
 					Constructor<?> enhancedSubclassConstructor = subclass.getConstructor(ctor.getParameterTypes());
 					instance = enhancedSubclassConstructor.newInstance(args);
 				}
@@ -131,6 +120,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			}
 			// SPR-10785: set callbacks directly on the instance instead of in the
 			// enhanced class (via the Enhancer) in order to avoid memory leaks.
+			// 为了避免 memory leaks 异常，直接在 bean 实例上设置回调对象
 			Factory factory = (Factory) instance;
 			factory.setCallbacks(new Callback[] {NoOp.INSTANCE,
 					new LookupOverrideMethodInterceptor(this.beanDefinition, this.owner),
@@ -139,17 +129,25 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		}
 
 		/**
+		 * 为提供的 BeanDefinition 创建 bean 类的增强子类
+		 *  CGLIB 的标准 API 的使用
 		 * Create an enhanced subclass of the bean class for the provided bean
 		 * definition, using CGLIB.
 		 */
 		private Class<?> createEnhancedSubclass(RootBeanDefinition beanDefinition) {
+
+			// 创建 Enhancer 对象
 			Enhancer enhancer = new Enhancer();
+			// 设置 Bean 类
 			enhancer.setSuperclass(beanDefinition.getBeanClass());
+			// 设置 Spring 的命名策略
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
+			// 设置生成策略
 			if (this.owner instanceof ConfigurableBeanFactory) {
 				ClassLoader cl = ((ConfigurableBeanFactory) this.owner).getBeanClassLoader();
 				enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(cl));
 			}
+			// 过滤，自定义逻辑来指定调用的callback下标
 			enhancer.setCallbackFilter(new MethodOverrideCallbackFilter(beanDefinition));
 			enhancer.setCallbackTypes(CALLBACK_TYPES);
 			return enhancer.createClass();

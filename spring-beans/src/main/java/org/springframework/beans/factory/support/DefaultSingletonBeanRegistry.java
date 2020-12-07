@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 
+
 	/** Cache of singleton objects: bean name --> bean instance */
 	//用于存放完全初始化好的 bean从该缓存中取出的 bean可以直接使用
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
@@ -70,6 +71,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/** Set of registered singletons, containing the bean names in registration order */
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
+
+	//正在创建中的单例 Bean 的名字的集合
 	/** Names of beans that are currently in creation */
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
@@ -153,6 +156,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * todo 这里可以看出三级缓存的的顺序
+	 *        singletonObjects  一级缓存
+	 *        earlySingletonObjects 二级缓存  (注意二级缓存的bean是通过三级缓存获取的？)
+	 *        singletonFactories 三级缓存  (三级缓存时什么时候加入的 在实例化的时候进行加入)
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
@@ -167,12 +174,17 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
-
+				//若为空且当前 bean 正在创建中，则从 earlySingletonObjects 中获取 Bean 对象
 				singletonObject = this.earlySingletonObjects.get(beanName);
 
+				//todo  很奇怪为什么需要三级缓存？二级缓存不就可以了？
+				//若为空且允许提前创建，则从 singletonFactories 中获取相应的 ObjectFactory 对象。若不为空，
+				// 则调用其 ObjectFactory#getObject(String name) 方法，
+				// 创建 Bean 对象，然后将其加入到 earlySingletonObjects ，然后从 singletonFactories 删除
 				if (singletonObject == null && allowEarlyReference) {
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
+						//这里是从二级缓存里面获取实例化的bean 这里要注意 这个会进行动态代理
 						singletonObject = singletonFactory.getObject();
 						this.earlySingletonObjects.put(beanName, singletonObject);
 						this.singletonFactories.remove(beanName);
@@ -193,6 +205,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
+		//加锁
 		synchronized (this.singletonObjects) {
 			Object singletonObject = this.singletonObjects.get(beanName);
 			if (singletonObject == null) {
@@ -215,6 +228,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					//初始化bean  其实是调用 createBean() 方法
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}
@@ -238,9 +252,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					if (recordSuppressedExceptions) {
 						this.suppressedExceptions = null;
 					}
-					//把标识为正在创建的标识去掉
+					// 后置处理把标识为正在创建的标识去掉
 					afterSingletonCreation(beanName);
 				}
+				//加入缓存  这里是最完美的bean
 				if (newSingleton) {
 					addSingleton(beanName, singletonObject);
 				}

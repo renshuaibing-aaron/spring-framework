@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/beans "
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans">
+
+
+	<bean class="com.aaron.ren.ioc.customerioc.test.cn.thinkinjava.myspring.test.HelloWorld" name="hello">
+
+		<property name="text" value="Hello World!"/>
+
+	</bean>
+
+
+	<bean class="com.aaron.ren.ioc.customerioc.test.cn.thinkinjava.myspring.test.ReferenceBean" name="referenceBean">
+
+		<property name="hello" ref="hello"/>
+
+	</bean>
+
+</beans>

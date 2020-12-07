@@ -41,6 +41,7 @@ import org.springframework.web.method.HandlerMethod;
 public interface HandlerMethodMappingNamingStrategy<T> {
 
 	/**
+	 * 作用：获得 Mapping 的名字。这样，我们就可以根据 Mapping 的名字，获得 Handler
 	 * Determine the name for the given HandlerMethod and mapping.
 	 * @param handlerMethod the handler method
 	 * @param mapping the mapping

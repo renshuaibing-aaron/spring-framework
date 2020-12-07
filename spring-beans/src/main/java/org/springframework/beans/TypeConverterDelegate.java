@@ -159,11 +159,16 @@ class TypeConverterDelegate {
 
 		// No custom editor but custom ConversionService specified?
 		ConversionService conversionService = this.propertyEditorRegistry.getConversionService();
+		System.out.println("======conversionServiceconversionService=========="+conversionService);
 		if (editor == null && conversionService != null && newValue != null && typeDescriptor != null) {
 			TypeDescriptor sourceTypeDesc = TypeDescriptor.forObject(newValue);
 			if (conversionService.canConvert(sourceTypeDesc, typeDescriptor)) {
 				try {
-					return (T) conversionService.convert(newValue, sourceTypeDesc, typeDescriptor);
+					//#convert(...) 方法，将给定的源对象 source 转换为指定的 targetType
+					System.out.println("=========测试测试convert开始=============="+newValue+sourceTypeDesc+typeDescriptor);
+					Object convert = conversionService.convert(newValue, sourceTypeDesc, typeDescriptor);
+					System.out.println("=========测试测试convert结束=============="+convert);
+					return (T)convert ;
 				}
 				catch (ConversionFailedException ex) {
 					// fallback to default conversion logic below
@@ -231,6 +236,7 @@ class TypeConverterDelegate {
 				else if (convertedValue instanceof String && !requiredType.isInstance(convertedValue)) {
 					if (conversionAttemptEx == null && !requiredType.isInterface() && !requiredType.isEnum()) {
 						try {
+							//todo  这里是干什么的
 							Constructor<T> strCtor = requiredType.getConstructor(String.class);
 							return BeanUtils.instantiateClass(strCtor, convertedValue);
 						}
